@@ -2,6 +2,9 @@ chrome.browserAction.onClicked.addListener(function() {
     chrome.tabs.query({active:true}, function(tabs) {
         var tab = tabs[0];
         chrome.tabs.executeScript(tab.id, {file: "jquery-2.0.3.js"});
+        chrome.tabs.executeScript(tab.id, {file: "html2canvas.js"});
+        chrome.tabs.executeScript(tab.id, {file: "underscore.js"});
+        chrome.tabs.executeScript(tab.id, {file: "image-container.js"});
         chrome.tabs.executeScript(tab.id, {file: "imazip.js"});
     });
 });
@@ -9,7 +12,9 @@ chrome.browserAction.onClicked.addListener(function() {
 chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
     if (req.name !== 'imazip') return;
     var page_url = req.page_url;
-    var urls = req.urls;
+    var urls     = req.urls;
+    var filename = req.filename.replace(/[:\/|"*<>?]/g, '');
+    filename += filename.match(/\.zip$/) ? '' : '.zip';
 
     var zip = new JSZip();
 
@@ -35,8 +40,13 @@ chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
     Promise.all(promises).then(function () {
         var blob = zip.generate({ type: "blob" });
         var objectUrl = URL.createObjectURL(blob);
-        chrome.downloads.download({url:objectUrl}, function() {
+
+        chrome.downloads.download({
+            url:objectUrl,
+            filename:filename
+        }, function() {
             console.log('complete');
+            sendResponse('complete');
         })
     });
 });
