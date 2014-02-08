@@ -95,10 +95,14 @@ class ImageSelector {
 
     onClickDownload(e) {
         var filename = this.$el.find('.imazip-download-filename').val();
+        var urls = Array.prototype.map.call(
+            this.$el.find('.imazip-image-container.checked img'),
+            (img) => $(img).attr('src')
+        ).filter((url) => url ? 1 : 0);
         chrome.runtime.sendMessage({
             name: "imazip",
             page_url: location.href,
-            urls: this.urls,
+            urls: urls,
             filename: filename
         }, function(res) {
             console.log(res);
@@ -150,7 +154,7 @@ class UrlPicker {
         var urls = Array.prototype.map.call($(e.target).find('img'), (img) => {
             var $img = $(img);
             var $a = $(img).closest('a');
-            if (!$img.attr('src').match(/(jpeg|jpg|png|gif)$/i)) return;
+            if (!$img.attr('src')) return;
             return ($a.length > 0 && $a.attr('href').match(/(jpeg|jpg|png|gif)$/i))
                 ? $a.attr('href') : $(img).attr('src')
         }).filter((url) => url ? 1 : 0);
