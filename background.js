@@ -14,15 +14,15 @@ chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
     var zip = new JSZip();
 
     var promises = urls.map(function (url) {
-        var resolved_url = URI.resolve(page_url, url);
+        var resolvedUrl = URI.resolve(page_url, url);
         return new Promise(function(resolve, reject) {
             var xhr = new XMLHttpRequest();
-            xhr.open("GET", resolved_url);
+            xhr.open("GET", resolvedUrl);
             xhr.responseType = "arraybuffer";
 
             xhr.onload = function (event) {
                 var arrayBuffer = xhr.response;
-                var filename = resolved_url.replace(/^(.*)\//, '');
+                var filename = resolvedUrl.replace(/^(.*)\//, '');
                 zip.file(filename, arrayBuffer, { binary: true });
                 resolve(true);
             };
