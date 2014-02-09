@@ -65,7 +65,6 @@ chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
                 var filename = resolvedUrl.replace(/^(.*)\//, '');
                 var mime = xhr.getResponseHeader('Content-Type');
                 var ext  = mimeTypes[mime];
-                console.log(ext);
                 filename += filename.match(new RegExp('\\.' + ext + '$')) ? '' : '.' + ext;
                 zip.file(filename, arrayBuffer, { binary : true });
                 resolve(true);
