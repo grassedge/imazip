@@ -1,74 +1,7 @@
 /// <reference path="d.ts/DefinitelyTyped/jquery/jquery.d.ts" />
 declare var chrome:any;
-declare var html2canvas:any;
 declare var JST:any;
 declare var _:any;
-
-class ImagePreview {
-    timerId:any;
-    target:any;
-    previewImg:any;
-    callbacks:any;
-    clientX:number;
-    clientY:number;
-
-    constructor() {
-        this.callbacks = {
-            onMouseover : (e) => this.onMouseover(e),
-            onEnd       : (e) => this.onEnd(e),
-        };
-
-        $(document.body).on('mouseover', this.callbacks.onMouseover);
-        $(document.body).on('imazip:end', this.callbacks.onEnd);
-    }
-
-    private createPreview(dataURI):any {
-        var $img = $('<img>').attr('src', dataURI);
-        $img.css({
-            width:'100%',
-            height:'100%',
-        });
-        var $container = $('<div>').append($img);
-        $container.css({
-            position: 'fixed',
-            maxWidth: '300px',
-            maxHeight: '300px',
-            backgroundColor: 'white',
-            top: this.clientY,
-            left: this.clientX,
-            zIndex: 10000
-        });
-        return $container;
-    }
-
-    private onMouseover(e) {
-        var target = this.target = e.target;
-
-        clearTimeout(this.timerId);
-        if (this.previewImg) {
-            this.previewImg.remove();
-            delete this.previewImg;
-        }
-        this.clientX = e.clientX;
-        this.clientY = e.clientY;
-        this.timerId = setTimeout(() => {
-            // なぜか html2canvas を呼ぶと一番上にスクロールされる
-            html2canvas(this.target, {
-                onrendered: (canvas) => {
-                    var dataURI = canvas.toDataURL('image/png');
-                    this.previewImg = this.createPreview(dataURI);
-                    $('body').append(this.previewImg);
-                }
-            });
-            console.log('zutto ita');
-        }, 1000)
-    }
-
-    private onEnd(e) {
-        $(document.body).off('mouseover', this.callbacks.onMouseover);
-        $(document.body).off('end', this.callbacks.onEnd);
-    }
-}
 
 class ImageSelector {
     urls:string[];
@@ -77,6 +10,7 @@ class ImageSelector {
     constructor(args:{urls:string[];}) {
         this.urls = args.urls;
         this.callbacks = {
+            onEnd: (e) => { this.onEnd(e) },
             onClickClose: (e) => { this.onClickClose(e) },
             onClickDownload: (e) => { this.onClickDownload(e) },
             onClickImage: (e) => { this.onClickImage(e) }
@@ -88,9 +22,19 @@ class ImageSelector {
         }));
         $(document.body).append(this.$el);
 
+        $(document.body).on('imazip:end', this.callbacks.onEnd);
         this.$el.on('click', '.imazip-download-button.close', this.callbacks.onClickClose);
         this.$el.on('click', '.imazip-download-button.download', this.callbacks.onClickDownload);
         this.$el.on('click', '.imazip-image-container', this.callbacks.onClickImage);
+    }
+
+    destroy() {
+        this.$el.remove();
+        $(document.body).off('imazip:end', this.callbacks.onEnd);
+    }
+
+    onEnd(e) {
+        this.destroy();
     }
 
     onClickDownload(e) {
@@ -115,7 +59,12 @@ class ImageSelector {
     }
 
     onClickClose(e) {
-        this.$el.remove();
+        this.destroy()
+        chrome.runtime.sendMessage({
+            name: "imazip:close",
+        }, function(res) {
+            console.log(res);
+        });
     }
 }
 
@@ -151,7 +100,9 @@ class UrlPicker {
     }
 
     private onClick(e) {
-        var urls = Array.prototype.map.call($(e.target).find('img'), (img) => {
+        var urls = Array.prototype.filter.call($(e.target).find('img'), (img) => {
+            return (img.width >= 300 && img.height >= 300) ? 1 : 0;
+        }).map((img) => {
             var $img = $(img);
             var $a = $(img).closest('a');
             if (!$img.attr('src')) return;
@@ -174,9 +125,22 @@ class UrlPicker {
 }
 
 (function() {
-    var picker = new UrlPicker();
-    // var preview = new ImagePreview();
-    $(picker).on('picked', function(e, ...urls) {
-        $(document.body).trigger('imazip:end');
+
+    chrome.runtime.onConnect.addListener(function(port) {
+        console.log(port);
+        console.assert(port.name == "imazip");
+
+        port.onMessage.addListener(function(msg) {
+            console.log(msg)
+            if (msg.command === 'imazip:start') {
+                var picker = new UrlPicker();
+                $(picker).on('picked', function(e, ...urls) {
+                    $(document.body).trigger('imazip:end');
+                });
+            }
+            if (msg.command === 'imazip:end') {
+                $(document.body).trigger('imazip:end');
+            }
+        });
     });
 })();
