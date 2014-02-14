@@ -13,7 +13,8 @@ class ImageSelector {
             onEnd: (e) => { this.onEnd(e) },
             onClickClose: (e) => { this.onClickClose(e) },
             onClickDownload: (e) => { this.onClickDownload(e) },
-            onClickImage: (e) => { this.onClickImage(e) }
+            onClickImage: (e) => { this.onClickImage(e) },
+            onDblClickImage: (e) => { this.onDblClickImage(e) }
         };
 
         this.$el = $(JST['image-container.ejs']({
@@ -26,6 +27,7 @@ class ImageSelector {
         this.$el.on('click', '.imazip-download-button.close', this.callbacks.onClickClose);
         this.$el.on('click', '.imazip-download-button.download', this.callbacks.onClickDownload);
         this.$el.on('click', '.imazip-image-container', this.callbacks.onClickImage);
+        this.$el.on('dblclick', '.imazip-image-container', this.callbacks.onDblClickImage);
     }
 
     destroy() {
@@ -56,6 +58,11 @@ class ImageSelector {
 
     onClickImage(e) {
         $(e.currentTarget).toggleClass('checked');
+    }
+
+    onDblClickImage(e) {
+        var url = $(e.currentTarget).find('img').attr('src');
+        window.open(url);
     }
 
     onClickClose(e) {
