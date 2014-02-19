@@ -1,40 +1,27 @@
-chrome.browserAction.setBadgeBackgroundColor({
-    color: '#00FF00'
-});
+chrome.browserAction.setBadgeBackgroundColor({ color: '#00FF00' });
+
 chrome.browserAction.onClicked.addListener(function() {
+
     chrome.tabs.query({active:true}, function(tabs) {
         var tab = tabs[0];
 
         new Promise(function(resolve, reject) {
-            chrome.tabs.executeScript(tab.id, {file: "confirmInitialized.js"}, function(result) {
-                var inited = result[0];
-                if (inited) {
-                    resolve();
-                } else {
-                    chrome.tabs.executeScript(tab.id, {file: "jquery-2.0.3.js"});
-                    chrome.tabs.executeScript(tab.id, {file: "underscore.js"});
-                    chrome.tabs.executeScript(tab.id, {file: "image-container.js"});
-                    chrome.tabs.executeScript(tab.id, {file: "imazip.js"}, function(result) {
-                        resolve();
-                    });
-                }
-            });
-        }).then(function() {
-            return new Promise(function(resolve, reject) {
-                chrome.browserAction.getBadgeText(
-                    { tabId : tab.id },
-                    function(badgeText) { resolve(badgeText) }
-                );
-            });
+            chrome.browserAction.getBadgeText(
+                { tabId : tab.id },
+                function(badgeText) { resolve(badgeText) }
+            );
         }).then(function(badgeText) {
-            console.log(badgeText);
-            var port = chrome.tabs.connect(tab.id, {name:'imazip'});
-
             if (badgeText === 'on') {
-                port.postMessage({command:'imazip:end'});
+                chrome.tabs.sendMessage(tab.id, {command:'imazip:end'});
                 chrome.browserAction.setBadgeText({ tabId: tab.id, text: '' })
             } else {
-                port.postMessage({command:'imazip:start'});
+                chrome.tabs.executeScript(tab.id, {file: "js/jquery-2.0.3.js"});
+                chrome.tabs.executeScript(tab.id, {file: "js/pick-url.js"}, function(result) {
+                    chrome.tabs.sendMessage(tab.id, {
+                        command:'imazip:start',
+                        filter: localStorage.s
+                    });
+                });
                 chrome.browserAction.setBadgeText({ tabId: tab.id, text: 'on' })
             }
         });
@@ -42,6 +29,12 @@ chrome.browserAction.onClicked.addListener(function() {
 });
 
 chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
+    if (req.name === 'imazip:url:picked') {
+        chrome.browserAction.setBadgeText({ tabId: sender.tab.id, text: '' });
+        chrome.tabs.create({url:"html/download.html"}, function(tab) {
+            chrome.tabs.sendMessage(tab.id, {urls:req.urls});
+        });
+    }
     if (req.name === 'imazip:close') {
         chrome.browserAction.setBadgeText({ tabId: sender.tab.id, text: '' })
     }
