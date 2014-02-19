@@ -18,20 +18,20 @@ module.exports = function(grunt) {
                 files: {
                     'js/download-jst.js' : 'views/download/image-container.ejs',
                     'image-container.js': 'image-container.ejs',
-                    'option-converter.js': 'option-converter.ejs',
+                    'js/option-converter.js': 'views/option-converter.ejs',
                 }
             }
         },
 
         typescript: {
-            extension: {
-                src: ['imazip.ts'],
-                dest: 'imazip.js',
+            download: {
+                src: ['js/download.ts'],
+                dest: 'js/download.js',
                 options: { ignoreTypeCheck: true }
             },
             option: {
-                src: ['options.ts'],
-                dest: 'options.js',
+                src: ['js/options.ts'],
+                dest: 'js/options.js',
                 options: { ignoreTypeCheck: true }
             }
         },
