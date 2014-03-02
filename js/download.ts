@@ -4,46 +4,47 @@ declare var JST:any;
 declare var _:any;
 
 class ImageSelector {
-    urls:string[];
-    $el:any;
-    callbacks:any;
-    constructor(args:{urls:string[];}) {
-        this.urls = args.urls;
+    urls: string[];
+    pageUrl: string;
+    $el: JQuery;
+    callbacks: any;
+
+    constructor() {
+        this.$el = $(document.body);
+
         this.callbacks = {
-            onEnd: (e) => { this.onEnd(e) },
+            onMessage: (e) => { this.onMessage(e) },
             onClickClose: (e) => { this.onClickClose(e) },
             onClickDownload: (e) => { this.onClickDownload(e) },
             onClickImage: (e) => { this.onClickImage(e) },
-            onDblClickImage: (e) => { this.onDblClickImage(e) }
+            onDblClickImage: (e) => { this.onDblClickImage(e) },
         };
 
-        this.$el = $('.imazip-screen');
-        var $el = $(JST['download-image-container']({
-            urls:this.urls,
-            title:$('title').text()
-        }));
-        $('.imazip-content').append($el);
-
-        $(document.body).on('imazip:end', this.callbacks.onEnd);
-        this.$el.on('click', '.imazip-download-button.close', this.callbacks.onClickClose);
-        this.$el.on('click', '.imazip-download-button.download', this.callbacks.onClickDownload);
-        this.$el.on('click', '.imazip-image-container', this.callbacks.onClickImage);
-        this.$el.on('dblclick', '.imazip-image-container', this.callbacks.onDblClickImage);
+        chrome.runtime.onMessage.addListener(this.callbacks.onMessage);
+        this.$el.on('click', '.close-button', this.callbacks.onClickClose);
+        this.$el.on('click', '.download-button', this.callbacks.onClickDownload);
+        this.$el.on('click', '.image-container', this.callbacks.onClickImage);
+        this.$el.on('dblclick', '.image-container', this.callbacks.onDblClickImage);
     }
 
-    destroy() {
-        this.$el.remove();
-        $(document.body).off('imazip:end', this.callbacks.onEnd);
+    render() {
+        // XXX filename.
+        $('.download-filename').val('hoge'/*this.filename*/);
+        var html = $(JST['download-image-container']({urls:this.urls}));
+        $('.imazip-content').append(html);
     }
 
-    onEnd(e) {
-        this.destroy();
+    private onMessage(req /* , sender, sendResponse */) {
+        this.urls    = req.urls;
+        this.pageUrl = req.pageUrl;
+
+        this.render();
     }
 
-    onClickDownload(e) {
-        var filename = this.$el.find('.imazip-download-filename').val();
+    private onClickDownload(e) {
+        var filename = this.$el.find('.download-filename').val();
         var urls = Array.prototype.map.call(
-            this.$el.find('.imazip-image-container.checked img'),
+            this.$el.find('.image-container.checked img'),
             (img) => $(img).attr('src')
         ).filter((url) => url ? 1 : 0);
         chrome.runtime.sendMessage({
@@ -57,28 +58,20 @@ class ImageSelector {
         });
     }
 
-    onClickImage(e) {
+    private onClickImage(e) {
         $(e.currentTarget).toggleClass('checked');
     }
 
-    onDblClickImage(e) {
+    private onDblClickImage(e) {
         var url = $(e.currentTarget).find('img').attr('src');
         window.open(url);
     }
 
-    onClickClose(e) {
-        this.destroy()
-        chrome.runtime.sendMessage({
-            name: "imazip:close",
-        }, function(res) {
-            console.log(res);
-        });
+    private onClickClose(e) {
+        close();
     }
 }
 
 $(function() {
-    chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
-        var urls = req.urls;
-        new ImageSelector({urls:urls});
-    });
+    new ImageSelector();
 });
