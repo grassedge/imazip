@@ -35,9 +35,7 @@ chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
             chrome.tabs.sendMessage(tab.id, {urls:req.urls});
         });
     }
-    if (req.name === 'imazip:close') {
-        chrome.browserAction.setBadgeText({ tabId: sender.tab.id, text: '' })
-    }
+
     if (req.name !== 'imazip') return;
     var page_url = req.page_url;
     var urls     = req.urls;
@@ -68,6 +66,7 @@ chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
             xhr.send();
         });
     });
+
     Promise.all(promises).then(function () {
         var blob = zip.generate({ type: "blob" });
         var objectUrl = URL.createObjectURL(blob);
