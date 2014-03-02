@@ -19,6 +19,7 @@
     "icons": { "128": "public/img/icon_16.png" },
     "permissions": [
         "http://*/*",
+        "https://*/*",
         "tabs",
         "activeTab",
         "downloads"
