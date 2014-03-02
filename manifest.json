@@ -13,11 +13,11 @@
         "persistent": false
     },
     "browser_action": {
-        "default_icon": "public/img/icon_16.png",
+        "default_icon": "img/icon_16.png",
         "default_title": "imazip"
     },
     "options_page": "html/options.html",
-    "icons": { "128": "public/img/icon_16.png" },
+    "icons": { "128": "img/icon_16.png" },
     "permissions": [
         "http://*/*",
         "https://*/*",
