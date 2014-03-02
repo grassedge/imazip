@@ -1,6 +1,81 @@
 /// <reference path="../d.ts/DefinitelyTyped/jquery/jquery.d.ts" />
 declare var chrome:any;
 
+    // (urlsWithImages:any[]):any[] => {
+    //     return urlsWithImages.map((image) => {
+    //         try  {
+    //             var func = new Function("image", this.filter);
+    //             return func(image);
+    //         } catch (e) {
+    //             console.log(e);
+    //         }
+    //     });
+    // },
+
+var filters = [
+    {
+        pageUrl: { regexp: /.*/ },
+        filterScript: (urlsWithImages:any[]):any[] => {
+            return urlsWithImages.filter((image) => {
+                var img = image.img;
+                return (img.width >= 200 && img.height >= 200) ? true : false;
+            });
+        },
+    },
+    {
+        pageUrl: { regexp: /.*/ },
+        filterScript: (urlsWithImages:any[]):any[] => {
+            return urlsWithImages.map((urlWithImage) => {
+                var img = urlWithImage.img;
+                var $img = $(img);
+                var $a = $img.closest('a');
+                if (!$img.attr('src')) return;
+                var url = ($a.length > 0 && $a.attr('href').match(/(jpeg|jpg|png|gif)$/i))
+                    ? $a.attr('href') : $img.attr('src');
+                return { img : img, url : url };
+            });
+        }
+    },
+    {
+        pageUrl: { regexp : /matome.naver.jp/ },
+        filterScript: function (urlsWithImages) {
+            return urlsWithImages.map(function (urlWithImage) {
+                var img = urlWithImage.img;
+                var $img = $(img);
+                var $a = $img.closest('a');
+                var href = $a.attr('href');
+                var pageUrl = $a.attr('href');
+                var d = $.Deferred();
+                $.get(pageUrl).done(function (body) {
+                    var url = $(body).find('.mdMTMEnd01Wrap img').attr('src');
+                    d.resolve({ url: url, img: img });
+                });
+                return d.promise();
+            });
+        }
+    },
+    {
+        pageUrl: { regexp : /^http:\/\/www.cosp.jp/ },
+        filterScript: (urlsWithImages:any[]):any[] => {
+            return urlsWithImages.map((urlWithImage) => {
+                var img = urlWithImage.img;
+                var $img = $(img);
+                var $a = $img.closest('a');
+                var href = $a.attr('href');
+                if (!href || href[0] !== '/') return urlWithImage;
+                var pageUrl = 'http://www.cosp.jp' + $a.attr('href');
+                var d = $.Deferred();
+                $.get(pageUrl).done((body) => {
+                    var url = $(body).find('#imgView').attr('src');
+                    // console.log(url)
+                    d.resolve({ url : url, img : img });
+                })
+                return d.promise();
+            });
+        },
+    }
+];
+
 class UrlPicker {
     HIGHLIGHT_SHADOW:string = '0 0 30px rgba(0,0,128,0.5)';
     originalShadow:any;
@@ -50,69 +125,10 @@ class UrlPicker {
         });
         var urlsWithImages = urls;
 
-        var converters = [
-            (urlsWithImages:any[]):any[] => {
-                return urlsWithImages.filter((image) => {
-                    var img = image.img;
-                    return (img.width >= 200 && img.height >= 200) ? true : false;
-                });
-            },
-            (urlsWithImages:any[]):any[] => {
-                return urlsWithImages.map((image) => {
-                    try  {
-                        var func = new Function("image", this.filter);
-                        return func(image);
-                    } catch (e) {
-                        console.log(e);
-                    }
-                });
-            },
-            (urlsWithImages:any[]):any[] => {
-                return urlsWithImages.map((urlWithImage) => {
-                    var img = urlWithImage.img;
-                    var $img = $(img);
-                    var $a = $img.closest('a');
-                    if (!$img.attr('src')) return;
-                    var url = ($a.length > 0 && $a.attr('href').match(/(jpeg|jpg|png|gif)$/i))
-                        ? $a.attr('href') : $img.attr('src');
-                    return { img : img, url : url };
-                });
-            },
-            (urlsWithImages:any[]):any[] => {
-                return urlsWithImages.map((urlWithImage) => {
-                    var img = urlWithImage.img;
-                    var $img = $(img);
-                    var $a = $img.closest('a');
-                    var href = $a.attr('href');
-                    var pageUrl = $a.attr('href');
-                    var d = $.Deferred();
-                    $.get(pageUrl).done((body) => {
-                        var url = $(body).find('.mdMTMEnd01Wrap img').attr('src');
-                        d.resolve({ url : url, img : img });
-                    })
-                    return d.promise();
-                });
-            },
-            // (urlsWithImages:any[]):any[] => {
-            //     return urlsWithImages.map((urlWithImage) => {
-            //         var img = urlWithImage.img;
-            //         var $img = $(img);
-            //         var $a = $img.closest('a');
-            //         var href = $a.attr('href');
-            //         if (!href || href[0] !== '/') return urlWithImage;
-            //         var pageUrl = 'http://www.cosp.jp' + $a.attr('href');
-            //         var d = $.Deferred();
-            //         $.get(pageUrl).done((body) => {
-            //             var url = $(body).find('#imgView').attr('src');
-            //             // console.log(url)
-            //             d.resolve({ url : url, img : img });
-            //         })
-            //         return d.promise();
-            //     });
-            // },
-        ];
-
-        var promise = converters.reduce((promise:JQueryPromise<any>, converter) => {
+        var pageUrl = location.href;
+        var f = filters.filter((filter) => !!location.href.match(filter.pageUrl.regexp))
+                       .map((filter) => filter.filterScript);
+        var promise = f.reduce((promise:JQueryPromise<any>, converter) => {
             return promise.then((...urlsWithImages) => {
                 return $.when.apply($, converter(urlsWithImages));
             });
@@ -125,7 +141,6 @@ class UrlPicker {
 
             chrome.runtime.sendMessage({
                 name: "imazip:url:picked",
-                pageUrl: location.href,
                 urls: urls,
             });
             $(document.body).trigger('imazip:end');
