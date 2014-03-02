@@ -1,0 +1,11 @@
+<div class="filter-item">
+  <div><%= converter.name %></div>
+  <div>
+    対象のページ
+    <select>
+      <option <%= converter.pageUrlIsRegexp() ? '' : 'selected' %>>文字列</option>
+      <option <%= converter.pageUrlIsRegexp() ? 'selected' : '' %>>正規表現</option>
+    </select>
+    <input type="text" value="<%= converter.pageUrl.regexp.toString().slice(1,-1) %>" />
+  </div>
+</div>

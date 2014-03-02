@@ -16,6 +16,7 @@
         "default_icon": "public/img/icon_16.png",
         "default_title": "imazip"
     },
+    "options_page": "html/options.html",
     "icons": { "128": "public/img/icon_16.png" },
     "permissions": [
         "http://*/*",

@@ -18,7 +18,7 @@ module.exports = function(grunt) {
                 files: {
                     'js/download-jst.js' : 'views/download/image-container.ejs',
                     'image-container.js': 'image-container.ejs',
-                    'js/option-converter.js': 'views/option-converter.ejs',
+                    'js/option-jst.js': 'views/option/*.ejs',
                 }
             }
         },
