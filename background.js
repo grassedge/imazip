@@ -30,9 +30,11 @@ chrome.browserAction.onClicked.addListener(function() {
 
 chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
     if (req.name === 'imazip:url:picked') {
+        var pageUrl = sender.url;
+        var urls = req.urls.map(function(url) { return URI.resolve(pageUrl, url) });
         chrome.browserAction.setBadgeText({ tabId: sender.tab.id, text: '' });
         chrome.tabs.create({url:"html/download.html"}, function(tab) {
-            chrome.tabs.sendMessage(tab.id, {urls:req.urls});
+            chrome.tabs.sendMessage(tab.id, {urls:urls});
         });
     }
 
