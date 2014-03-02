@@ -29,6 +29,11 @@ module.exports = function(grunt) {
                 dest: 'js/download.js',
                 options: { ignoreTypeCheck: true }
             },
+            'pick-url': {
+                src: ['js/pick-url.ts'],
+                dest: 'js/pick-url.js',
+                options: { ignoreTypeCheck: true }
+            },
             option: {
                 src: ['js/options.ts'],
                 dest: 'js/options.js',
@@ -38,11 +43,11 @@ module.exports = function(grunt) {
 
         watch: {
             jst: {
-                files: ['*.ejs'],
+                files: ['views/*.ejs'],
                 tasks: ['jst']
             },
             typescript: {
-                files: ['*.ts'],
+                files: ['js/*.ts'],
                 tasks: ['typescript']
             }
         }
