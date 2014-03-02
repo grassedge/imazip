@@ -1,7 +1,6 @@
 /// <reference path="../d.ts/DefinitelyTyped/jquery/jquery.d.ts" />
 declare var chrome:any;
 declare var JST:any;
-declare var _:any;
 
 class ImageSelector {
     urls: string[];
