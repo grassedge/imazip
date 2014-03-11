@@ -34,7 +34,7 @@ chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
         var urls = req.urls.map(function(url) { return URI.resolve(pageUrl, url) });
         chrome.browserAction.setBadgeText({ tabId: sender.tab.id, text: '' });
         chrome.tabs.create({url:"html/download.html"}, function(tab) {
-            chrome.tabs.sendMessage(tab.id, {urls:urls});
+            chrome.tabs.sendMessage(tab.id, {urls:urls, title:req.title});
         });
     }
 

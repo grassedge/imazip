@@ -5,6 +5,7 @@ declare var JST:any;
 class ImageSelector {
     urls: string[];
     pageUrl: string;
+    filename: string;
     $el: JQuery;
     callbacks: any;
 
@@ -28,7 +29,7 @@ class ImageSelector {
 
     render() {
         // XXX filename.
-        $('.download-filename').val('hoge'/*this.filename*/);
+        $('.download-filename').val(this.filename);
         var html = $(JST['download-image-container']({urls:this.urls}));
         $('.imazip-content').append(html);
     }
@@ -36,6 +37,7 @@ class ImageSelector {
     private onMessage(req /* , sender, sendResponse */) {
         this.urls    = req.urls;
         this.pageUrl = req.pageUrl;
+        this.filename = req.title;
 
         this.render();
     }

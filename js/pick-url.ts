@@ -142,6 +142,7 @@ class UrlPicker {
             chrome.runtime.sendMessage({
                 name: "imazip:url:picked",
                 urls: urls,
+                title: $('title').text(),
             });
             $(document.body).trigger('imazip:end');
         });
