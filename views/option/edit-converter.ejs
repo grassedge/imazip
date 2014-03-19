@@ -1,0 +1,30 @@
+<div class="edit-filter-item" data-id="<%= converter.id() %>">
+  <div>
+    <span>フィルター名</span>
+    <input class="filter-name" type="text" value="<%= converter.name %>" />
+  </div>
+  <div>
+    <span>対象のページ</span>
+    <select class="filter-page-url-match-type">
+      <option val="string" <%= converter.pageUrlIsRegexp() ? '' : 'selected' %>>文字列</option>
+      <option val="regexp" <%= converter.pageUrlIsRegexp() ? 'selected' : '' %>>正規表現</option>
+    </select>
+    <input class="filter-page-url" type="text"
+           value="<%= converter.pageUrlRegexpAsString() %>" />
+  </div>
+  <div>
+    <p>
+    function(urlsWithImages) {
+    </p>
+    <p>
+    <textarea class="filter-script"><%= converter.filterScriptAsString() %></textarea>
+    </p>
+    <p>
+    }
+    </p>
+  </div>
+  <div>
+    <button class="save-button">save</button>
+    <button class="delete-button">delete</button>
+  </div>
+</div>

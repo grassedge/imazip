@@ -1,11 +1,14 @@
-<div class="filter-item">
-  <div><%= converter.name %></div>
+<div class="filter-item" data-id="<%= converter.id() %>">
+  <button class="edit-button">edit</button>
+  <div class="filter-name"><%= converter.name %></div>
   <div>
     対象のページ
-    <select>
-      <option <%= converter.pageUrlIsRegexp() ? '' : 'selected' %>>文字列</option>
-      <option <%= converter.pageUrlIsRegexp() ? 'selected' : '' %>>正規表現</option>
-    </select>
-    <input type="text" value="<%= converter.pageUrl.regexp.toString().slice(1,-1) %>" />
+    <span>
+      <%= converter.pageUrlIsRegexp() ? '正規表現' : '文字列' %>
+    </span>
+    <span><%= _.escape(converter.pageUrlAsString()) %></span>
+  </div>
+  <div>
+    <pre><%= _.escape(converter.filterScript) %></pre>
   </div>
 </div>
