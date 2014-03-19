@@ -1,18 +1,21 @@
 /// <reference path="../d.ts/DefinitelyTyped/jquery/jquery.d.ts" />
+/// <reference path="./util.ts" />
+/// <reference path="./converter.ts" />
 
 declare var JST:any;
 
-var filters = [
-    {
-        name: 'size fileter',
-        pageUrl: { regexp: /.*/ },
-        filterScript: (urlsWithImages:any[]):any[] => {
-            return urlsWithImages.filter((image) => {
-                var img = image.img;
-                return (img.width >= 200 && img.height >= 200) ? true : false;
-            });
-        },
-    },
+// built-in converters
+var builtinConverters = [
+    // {
+    //     name: 'size fileter',
+    //     pageUrl: { regexp: /.*/ },
+    //     filterScript: (urlsWithImages:any[]):any[] => {
+    //         return urlsWithImages.filter((image) => {
+    //             var img = image.img;
+    //             return (img.width >= 200 && img.height >= 200) ? true : false;
+    //         });
+    //     },
+    // },
     {
         name: 'thumbnail filter',
         pageUrl: { regexp: /.*/ },
@@ -70,32 +73,17 @@ var filters = [
     }
 ];
 
-class Converter {
-    name: string;
-    description: string;
-    pageUrl: any;
-    filterScript: string;
+class OptionController {
+    converters: IndexedList<Converter>;
 
     constructor(args) {
-        this.name         = args.name;
-        this.description  = args.description;
-        this.pageUrl      = args.pageUrl || {};
-        this.filterScript = args.filterScript;
-    }
-
-    pageUrlIsRegexp():boolean {
-        return !!this.pageUrl.regexp;
-    }
-}
-
-class OptionController {
-    converters: Converter[];
-
-    constructor() {
-        this.converters = filters.map((f) => new Converter(f));
+        this.converters = new IndexedList<Converter>(args.converters);
         this.render();
 
-        $('.add-button').on('click', (e) => this.onClickAddButton(e));
+        $(document.body).on('click', '.add-button', (e) => this.onClickAddButton(e));
+        $(document.body).on('click', '.edit-button', (e) => this.onClickEditButton(e));
+        $(document.body).on('click', '.save-button', (e) => this.onClickSaveButton(e));
+        $(document.body).on('click', '.delete-button', (e) => this.onClickDeleteButton(e));
     }
 
     render() {
@@ -106,11 +94,62 @@ class OptionController {
     }
 
     onClickAddButton(e) {
-        var html = JST['option-converter']({converter:new Converter({})});
+        var converter = new Converter({name:'new converter'});
+        this.converters.push(converter);
+        var html = JST['option-edit-converter']({converter:converter});
         $('.main-container').append(html);
+    }
+
+    onClickEditButton(e) {
+        var $button = $(e.target);
+        var $filterItem = $button.closest('.filter-item')
+        var id = $filterItem.attr('data-id');
+        var filterName = $filterItem.find('.filter-name').text();
+
+        var converter = this.converters.get(id);
+        if (converter === undefined) throw new Error('no converter in list');
+        var html = JST['option-edit-converter']({converter:converter});
+        $filterItem.replaceWith(html);
+    }
+
+    onClickSaveButton(e) {
+        var $button = $(e.target);
+        var $filterItem = $button.closest('.edit-filter-item')
+        var id = $filterItem.attr('data-id');
+        var filterName = $filterItem.find('.filter-name').val();
+        var filterPageUrl = $filterItem.find('.filter-page-url').val();
+        var filterScript = $filterItem.find('.filter-script').val();
+
+        var converter = this.converters.get(id);
+        converter.name         = filterName;
+        converter.pageUrl      = { regexp : filterPageUrl };
+        converter.filterScript = filterScript;
+
+        localStorage['converters'] = JSON.stringify(this.converters.getList());
+
+        var html = JST['option-converter']({converter:converter});
+        $filterItem.replaceWith(html);
+    }
+
+    onClickDeleteButton(e) {
+        var $button = $(e.target);
+        var $filterItem = $button.closest('.edit-filter-item')
+        var id = $filterItem.attr('data-id');
+        var idx = this.converters.indexOf(this.converters.get(id));
+        this.converters.splice(idx, 1);
+        
+        localStorage['converters'] = JSON.stringify(this.converters.getList());
+
+        $filterItem.remove();
     }
 }
 
 $(function() {
-    new OptionController();
+    // var converters = builtinConverters.map((f) => new Converter(f));
+    var converters = JSON.parse(localStorage['converters'] || '[]').map((c) => new Converter(c));
+    console.log(converters[0].pageUrl.regexp);
+    console.log(converters[0].filterScript);
+    console.log(new RegExp(converters[0].pageUrl.regexp));
+    console.log(new Function('urlsWithImages', converters[0].filterScript));
+    new OptionController({converters:converters});
 });
