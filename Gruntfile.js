@@ -17,7 +17,6 @@ module.exports = function(grunt) {
             compile: {
                 files: {
                     'js/download-jst.js' : 'views/download/image-container.ejs',
-                    'image-container.js': 'image-container.ejs',
                     'js/option-jst.js': 'views/option/*.ejs',
                 }
             }
@@ -43,13 +42,21 @@ module.exports = function(grunt) {
 
         watch: {
             jst: {
-                files: ['views/*.ejs'],
+                files: ['views/**/*.ejs'],
                 tasks: ['jst']
             },
-            typescript: {
-                files: ['js/*.ts'],
-                tasks: ['typescript']
-            }
+            'typescript-download': {
+                files: ['js/download.ts'],
+                tasks: ['typescript:download']
+            },
+            'typescript-url': {
+                files: ['js/pick-url.ts'],
+                tasks: ['typescript:pick-url']
+            },
+            'typescript-option': {
+                files: ['js/options.ts'],
+                tasks: ['typescript:option']
+            },
         }
     });
 
