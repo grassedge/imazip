@@ -68,49 +68,50 @@ chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
 
     }
 
-    if (req.name !== 'imazip') return;
-    var page_url = req.page_url;
-    var urls     = req.urls;
-    var filename = req.filename.replace(/[:\/|"*<>?]/g, '');
-    filename += filename.match(/\.zip$/) ? '' : '.zip';
+    if (req.name === 'imazip') {
+        var page_url = req.page_url;
+        var urls     = req.urls;
+        var filename = req.filename.replace(/[:\/|"*<>?]/g, '');
+        filename += filename.match(/\.zip$/) ? '' : '.zip';
 
-    var zip = new JSZip();
+        var zip = new JSZip();
 
-    var promises = urls.map(function (url) {
-        var resolvedUrl = URI.resolve(page_url, url);
-        return new Promise(function(resolve, reject) {
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", resolvedUrl);
-            xhr.responseType = "arraybuffer";
+        var promises = urls.map(function (url) {
+            var resolvedUrl = URI.resolve(page_url, url);
+            return new Promise(function(resolve, reject) {
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", resolvedUrl);
+                xhr.responseType = "arraybuffer";
 
-            xhr.onload = function (event) {
-                var arrayBuffer = xhr.response;
-                var filename = resolvedUrl.replace(/^(.*)\//, '');
-                var mime = xhr.getResponseHeader('Content-Type');
-                var ext  = mimeTypes[mime];
-                filename += filename.match(new RegExp('\\.' + ext + '$')) ? '' : '.' + ext;
-                zip.file(filename, arrayBuffer, { binary : true });
-                resolve(true);
-            };
-            xhr.onerror = function (event) {
-                resolve(false);
-            };
-            xhr.send();
+                xhr.onload = function (event) {
+                    var arrayBuffer = xhr.response;
+                    var filename = resolvedUrl.replace(/^(.*)\//, '');
+                    var mime = xhr.getResponseHeader('Content-Type');
+                    var ext  = mimeTypes[mime];
+                    filename += filename.match(new RegExp('\\.' + ext + '$')) ? '' : '.' + ext;
+                    zip.file(filename, arrayBuffer, { binary : true });
+                    resolve(true);
+                };
+                xhr.onerror = function (event) {
+                    resolve(false);
+                };
+                xhr.send();
+            });
         });
-    });
 
-    Promise.all(promises).then(function () {
-        var blob = zip.generate({ type: "blob" });
-        var objectUrl = URL.createObjectURL(blob);
+        Promise.all(promises).then(function () {
+            var blob = zip.generate({ type: "blob" });
+            var objectUrl = URL.createObjectURL(blob);
 
-        chrome.downloads.download({
-            url:objectUrl,
-            filename:filename
-        }, function() {
-            console.log('complete');
-            sendResponse('complete');
-        })
-    });
+            chrome.downloads.download({
+                url:objectUrl,
+                filename:filename
+            }, function() {
+                console.log('complete');
+                sendResponse('complete');
+            })
+        });
+    }
 });
 
 var converters = [
