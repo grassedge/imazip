@@ -37,6 +37,11 @@ module.exports = function(grunt) {
                 src: ['js/options.ts'],
                 dest: 'js/options.js',
                 options: { ignoreTypeCheck: true }
+            },
+            background: {
+                src: ['js/background.ts'],
+                dest: 'js/background.js',
+                options: { ignoreTypeCheck: true }
             }
         },
 
@@ -56,6 +61,10 @@ module.exports = function(grunt) {
             'typescript-option': {
                 files: ['js/options.ts'],
                 tasks: ['typescript:option']
+            },
+            'typescript-background': {
+                files: ['js/background.ts'],
+                tasks: ['typescript:background']
             },
         }
     });
