@@ -5,10 +5,10 @@
     "manifest_version": 2,
     "background": {
         "scripts": [
-            "promise-3.2.0.js",
-            "jszip.js",
-            "uri.js",
-            "background.js"
+            "js/jquery-2.0.3.js",
+            "js/jszip.js",
+            "js/uri.js",
+            "js/background.js"
         ],
         "persistent": false
     },
