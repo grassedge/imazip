@@ -7,7 +7,7 @@ function print() { __p += __j.call(arguments, '') }
 with (obj) {
 
  urls.forEach(function(url) { ;
-__p += '\n<div class="imazip-image-container checked">\n  <img class="imazip-image" src="' +
+__p += '\n<div class="image-container checked">\n  <img class="imazip-image" src="' +
 ((__t = ( url )) == null ? '' : __t) +
 '">\n</div>\n';
  }); ;
