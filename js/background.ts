@@ -1,4 +1,5 @@
 /// <reference path="../d.ts/DefinitelyTyped/jquery/jquery.d.ts" />
+/// <reference path="./converter.ts" />
 
 declare var chrome:any;
 declare var Promise:any;
@@ -23,12 +24,7 @@ chrome.browserAction.onClicked.addListener(function() {
                 chrome.browserAction.setBadgeText({ tabId: tab.id, text: '' })
             } else {
                 chrome.tabs.executeScript(tab.id, {file: "js/jquery-2.0.3.js"});
-                chrome.tabs.executeScript(tab.id, {file: "js/pick-url.js"}, function(result) {
-                    chrome.tabs.sendMessage(tab.id, {
-                        command:'imazip:start',
-                        filter: localStorage['filters']
-                    });
-                });
+                chrome.tabs.executeScript(tab.id, {file: "js/pick-url.js"});
                 chrome.browserAction.setBadgeText({ tabId: tab.id, text: 'on' })
             }
         });
@@ -40,10 +36,13 @@ chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
         var pageUrl = sender.url;
         var urls    = req.urls;
 
+        var converters =
+            JSON.parse(localStorage['converters'] || '[]').map((c) => new Converter(c));
+
         // このページに適用するコンバータのみ取り出す
         var convertersForSenderPage =
             converters.filter((c) => !!pageUrl.match(c.pageUrl.regexp))
-                      .map((c) => c.filterScript);
+                      .map((c) => c.filterScript());
 
         // コンバータを適用する
         var promise = convertersForSenderPage.reduce(
@@ -114,93 +113,9 @@ chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
     }
 });
 
-var converters = [
-    // {
-    //     pageUrl: { regexp: /.*/ },
-    //     filterScript: (urlsWithImages:any[]):any[] => {
-    //         return urlsWithImages.filter((image) => {
-    //             var img = image.img;
-    //             return (img.width >= 90 && img.height >= 90) ? true : false;
-    //         });
-    //     },
-    // },
-    {
-        pageUrl: { regexp: /.*/ },
-        filterScript: (urls:any[]):any[] => {
-            return urls.map((urlSet) => {
-                if (!urlSet.srcUrl) return;
-                var url = urlSet.anchorUrl && urlSet.anchorUrl.match(/(jpeg|jpg|png|gif)$/i)
-                    ? urlSet.anchorUrl : urlSet.srcUrl;
-                return {
-                    anchorUrl : urlSet.anchorUrl,
-                    srcUrl    : urlSet.srcUrl,
-                    url       : url,
-                };
-            });
-        }
-    },
-    // {
-    //     pageUrl: { regexp : /g.e-hentai.org/ },
-    //     filterScript: function (urlsWithImages) {
-    //         return urlsWithImages.map(function (urlWithImage) {
-    //             var img = urlWithImage.img;
-    //             var $img = $(img);
-    //             var $a = $img.closest('a');
-    //             var href = $a.attr('href');
-    //             var pageUrl = $a.attr('href');
-    //             var d = $.Deferred();
-    //             $.get(pageUrl).done(function (body) {
-    //                 var url = $(body).find('#img').attr('src');
-    //                 d.resolve({ url: url, img: img });
-    //             });
-    //             return d.promise();
-    //         });
-    //     }
-    // },
-    {
-        pageUrl: { regexp : /matome.naver.jp/ },
-        filterScript: function (urls) {
-            return urls.map(function (urlSet) {
-                var pageUrl = urlSet.anchorUrl;
-                var d = $.Deferred();
-                $.get(pageUrl).done(function (body) {
-                    var url = $(body).find('.mdMTMEnd01Wrap img').attr('src');
-                    d.resolve({
-                        anchorUrl : urlSet.anchorUrl,
-                        srcUrl    : urlSet.srcUrl,
-                        url       : url,
-                    });
-                }).fail(function(body) {
-                    d.resolve({
-                        anchorUrl : urlSet.anchorUrl,
-                        srcUrl    : urlSet.srcUrl,
-                    });
-                });
-                return d.promise();
-            });
-        }
-    },
-    // {
-    //     pageUrl: { regexp : /^http:\/\/www.cosp.jp/ },
-    //     filterScript: (urlsWithImages:any[]):any[] => {
-    //         return urlsWithImages.map((urlWithImage) => {
-    //             var img = urlWithImage.img;
-    //             var $img = $(img);
-    //             var $a = $img.closest('a');
-    //             var href = $a.attr('href');
-    //             if (!href || href[0] !== '/') return urlWithImage;
-    //             var pageUrl = 'http://www.cosp.jp' + $a.attr('href');
-    //             var d = $.Deferred();
-    //             $.get(pageUrl).done((body) => {
-    //                 var url = $(body).find('#imgView').attr('src');
-    //                 // console.log(url)
-    //                 d.resolve({ url : url, img : img });
-    //             })
-    //             return d.promise();
-    //         });
-    //     },
-    // }
-];
+function restoreConverters() {
+    return JSON.parse(localStorage['converters']).map((c) => new Converter(c));
+}
 
 var mimeTypes = {
     'image/bmp'                      : 'bmp',

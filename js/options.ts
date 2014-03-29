@@ -118,12 +118,12 @@ class OptionController {
         var id = $filterItem.attr('data-id');
         var filterName = $filterItem.find('.filter-name').val();
         var filterPageUrl = $filterItem.find('.filter-page-url').val();
-        var filterScript = $filterItem.find('.filter-script').val();
+        var filterText = $filterItem.find('.filter-text').val();
 
         var converter = this.converters.get(id);
         converter.name         = filterName;
         converter.pageUrl      = { regexp : filterPageUrl };
-        converter.filterScript = filterScript;
+        converter.filterText = filterText;
 
         localStorage['converters'] = JSON.stringify(this.converters.getList());
 
@@ -147,9 +147,5 @@ class OptionController {
 $(function() {
     // var converters = builtinConverters.map((f) => new Converter(f));
     var converters = JSON.parse(localStorage['converters'] || '[]').map((c) => new Converter(c));
-    console.log(converters[0].pageUrl.regexp);
-    console.log(converters[0].filterScript);
-    console.log(new RegExp(converters[0].pageUrl.regexp));
-    console.log(new Function('urlsWithImages', converters[0].filterScript));
     new OptionController({converters:converters});
 });

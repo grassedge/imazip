@@ -7,7 +7,6 @@ class UrlPicker {
     originalShadow:any;
     highlightTarget:any;
     callbacks:any;
-    filter:string;
 
     constructor() {
         this.callbacks = {
@@ -26,9 +25,6 @@ class UrlPicker {
     }
 
     private onMessage(e) {
-        if (e.command === 'imazip:start') {
-            this.filter = e.filter;
-        }
         if (e.command === 'imazip:end') {
             $(document.body).trigger('imazip:end');
         }

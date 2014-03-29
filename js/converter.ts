@@ -3,7 +3,6 @@ class Converter {
     name: string;
     description: string;
     pageUrl: any;
-    filterScript: any;
     filterText: string;
 
     constructor(args) {
@@ -11,7 +10,6 @@ class Converter {
         this.name         = args.name;
         this.description  = args.description;
         this.pageUrl      = args.pageUrl || {};
-        this.filterScript = args.filterScript;
         this.filterText   = args.filterText;
     }
 
@@ -27,8 +25,8 @@ class Converter {
         return !!this.pageUrl.regexp;
     }
 
-    filterScriptAsString():string {
-        return (this.filterScript || '').toString();
+    filterScript() {
+        return new Function('urls', this.filterText);
     }
 
     id() {
