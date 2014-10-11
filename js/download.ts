@@ -31,7 +31,11 @@ class ImageSelector {
         // XXX filename.
         $('.download-filename').val(this.filename);
         var html = $(JST['download-image-container']({urls:this.urls}));
-        $('.imazip-content').append(html);
+        var $fragment = $(html);
+        $fragment.find('img')
+            .on('load', (e) => this.onLoadImage(e))
+            .on('error', (e) => this.onErrorLoadingImage(e));
+        $('.imazip-content').append($fragment);
     }
 
     private onMessage(req /* , sender, sendResponse */) {
@@ -61,6 +65,18 @@ class ImageSelector {
 
     private onClickImage(e) {
         $(e.currentTarget).toggleClass('checked');
+    }
+
+    private onLoadImage(e) {
+        var img = <HTMLImageElement>e.target;
+        if (img.naturalHeight < 100 || img.naturalWidth < 100) {
+            $(img).closest('.image-container').removeClass('checked');
+        }
+    }
+
+    private onErrorLoadingImage(e) {
+        var img = <HTMLImageElement>e.target;
+        $(img).closest('.image-container').removeClass('checked');
     }
 
     private onDblClickImage(e) {
