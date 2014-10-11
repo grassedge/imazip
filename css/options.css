@@ -29,3 +29,11 @@ body {
     border-top: 1px solid white;
     border-bottom: 1px solid #c6c6c6;
 }
+
+.filter-text {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-left: 20px;
+    min-width: 500px;
+    min-height: 200px;
+}

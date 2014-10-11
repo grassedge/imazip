@@ -9,6 +9,8 @@
     <span><%= _.escape(converter.pageUrlAsString()) %></span>
   </div>
   <div>
-    <pre><%= _.escape(converter.filterText) %></pre>
+    <pre style="margin-bottom: 0"><code class="javascript">function(urls) {</code></pre>
+    <pre style="margin:0 0 0 20px"><code><%= _.escape(converter.filterText) %></code></pre>
+    <pre style="margin-top: 0"><code>}</code></pre>
   </div>
 </div>

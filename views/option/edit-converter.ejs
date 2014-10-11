@@ -12,16 +12,10 @@
     <input class="filter-page-url" type="text"
            value="<%= converter.pageUrlRegexpAsString() %>" />
   </div>
-  <div>
-    <p>
-    function(urlsWithImages) {
-    </p>
-    <p>
+  <div style="margin:5px;">
+    <pre>function(urls) {</pre>
     <textarea class="filter-text"><%= converter.filterText %></textarea>
-    </p>
-    <p>
-    }
-    </p>
+    <pre>}</pre>
   </div>
   <div>
     <button class="save-button">save</button>

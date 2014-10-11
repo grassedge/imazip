@@ -3,6 +3,7 @@
 /// <reference path="./converter.ts" />
 
 declare var JST:any;
+declare var hljs:any;
 
 // built-in converters
 var builtinConverters = [
@@ -146,6 +147,7 @@ class OptionController {
 
 $(function() {
     // var converters = builtinConverters.map((f) => new Converter(f));
+    hljs.initHighlightingOnLoad();
     var converters = JSON.parse(localStorage['converters'] || '[]').map((c) => new Converter(c));
     new OptionController({converters:converters});
 });
