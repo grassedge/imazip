@@ -18,6 +18,7 @@ class ImageSelector {
             onClickDownload: (e) => { this.onClickDownload(e) },
             onClickImage: (e) => { this.onClickImage(e) },
             onDblClickImage: (e) => { this.onDblClickImage(e) },
+            onChangeImageSize: (e) => { this.onChangeImageSize(e) },
         };
 
         chrome.runtime.onMessage.addListener(this.callbacks.onMessage);
@@ -25,10 +26,10 @@ class ImageSelector {
         this.$el.on('click', '.download-button', this.callbacks.onClickDownload);
         this.$el.on('click', '.image-container', this.callbacks.onClickImage);
         this.$el.on('dblclick', '.image-container', this.callbacks.onDblClickImage);
+        this.$el.on('change', '.image-size', this.callbacks.onChangeImageSize);
     }
 
     render() {
-        // XXX filename.
         $('.download-filename').val(this.filename);
         var html = $(JST['download-image-container']({urls:this.urls}));
         var $fragment = $(html);
@@ -36,6 +37,14 @@ class ImageSelector {
             .on('load', (e) => this.onLoadImage(e))
             .on('error', (e) => this.onErrorLoadingImage(e));
         $('.imazip-content').append($fragment);
+
+        this.resizeImage(5);
+    }
+
+    private resizeImage(imageNum:number) {
+        var containerWidth = $('.imazip-container').width();
+        var size = (containerWidth / imageNum) - 26;
+        this.$el.find('.image-container').css({height:size, width:size});
     }
 
     private onMessage(req /* , sender, sendResponse */) {
@@ -86,6 +95,11 @@ class ImageSelector {
 
     private onClickClose(e) {
         close();
+    }
+
+    private onChangeImageSize(e) {
+        var range = $(e.target).val();
+        this.resizeImage(6 - range);
     }
 }
 

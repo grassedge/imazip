@@ -109,8 +109,6 @@
     border: 1px solid rgb(64, 118, 255);
 }
 .image-container {
-    height:180px;
-    width:180px;
     float:left;
     margin:13px;
     text-align:center;
