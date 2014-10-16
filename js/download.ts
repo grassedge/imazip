@@ -19,6 +19,7 @@ class ImageSelector {
             onClickImage: (e) => { this.onClickImage(e) },
             onDblClickImage: (e) => { this.onDblClickImage(e) },
             onChangeImageSize: (e) => { this.onChangeImageSize(e) },
+            onChangeImageSizeFilter: (e) => { this.onChangeImageSizeFilter(e) },
         };
 
         chrome.runtime.onMessage.addListener(this.callbacks.onMessage);
@@ -27,6 +28,7 @@ class ImageSelector {
         this.$el.on('click', '.image-container', this.callbacks.onClickImage);
         this.$el.on('dblclick', '.image-container', this.callbacks.onDblClickImage);
         this.$el.on('change', '.image-size', this.callbacks.onChangeImageSize);
+        this.$el.on('change', '.image-size-filter', this.callbacks.onChangeImageSizeFilter);
     }
 
     render() {
@@ -58,7 +60,7 @@ class ImageSelector {
     private onClickDownload(e) {
         var filename = this.$el.find('.download-filename').val();
         var urls = Array.prototype.map.call(
-            this.$el.find('.image-container.checked img'),
+            this.$el.find('.image-container.checked:visible img'),
             (img) => $(img).attr('src')
         ).filter((url) => url ? 1 : 0);
         chrome.runtime.sendMessage({
@@ -79,13 +81,14 @@ class ImageSelector {
     private onLoadImage(e) {
         var img = <HTMLImageElement>e.target;
         if (img.naturalHeight < 100 || img.naturalWidth < 100) {
-            $(img).closest('.image-container').removeClass('checked');
+            // $(img).closest('.image-container').removeClass('checked');
+            $(img).closest('.image-container').hide();//removeClass('checked');
         }
     }
 
     private onErrorLoadingImage(e) {
         var img = <HTMLImageElement>e.target;
-        $(img).closest('.image-container').removeClass('checked');
+        $(img).closest('.image-container').hide();//removeClass('checked');
     }
 
     private onDblClickImage(e) {
@@ -100,6 +103,22 @@ class ImageSelector {
     private onChangeImageSize(e) {
         var range = $(e.target).val();
         this.resizeImage(6 - range);
+    }
+
+    private onChangeImageSizeFilter(e) {
+        var $target = $(e.target);
+        var direction = $target.attr('date-direction');
+
+        var $containers = this.$el.find('.image-container');
+        $containers.hide();
+        $containers.filter((idx, el) => {
+            var img = el.querySelector('img');
+            if (direction === 'width') {
+                return img.naturalWidth > $target.val()
+            } else if (direction === 'height') {
+                return img.naturalHeight > $target.val()
+            }
+        }).show();
     }
 }
 
