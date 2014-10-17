@@ -2,7 +2,38 @@
 declare var chrome:any;
 declare var JST:any;
 
-class ImageSelector {
+class ImageContainer {
+    url: string;
+    $el: JQuery;
+
+    constructor(args: {
+        url:string;
+        $el:JQuery
+    }) {
+        this.url = args.url;
+        this.$el = args.$el;
+
+        this.$el.find('img').on('load', (e) => this.onLoadImage(e))
+        this.$el.find('img').on('error', (e) => this.onErrorLoadingImage(e));
+    }
+
+    private onLoadImage(e) {
+        var img = <HTMLImageElement>e.target;
+        if (img.naturalHeight < 100 || img.naturalWidth < 100) {
+            $(img).closest('.image-container').hide();
+        }
+        this.$el.find('.image-size-width-label').text(img.naturalWidth);
+        this.$el.find('.image-size-height-label').text(img.naturalHeight);
+        this.$el.find('.image-url').text(this.url);
+    }
+
+    private onErrorLoadingImage(e) {
+        var img = <HTMLImageElement>e.target;
+        $(img).closest('.image-container').hide();
+    }
+}
+
+class Downloader {
     urls: string[];
     pageUrl: string;
     filename: string;
@@ -34,12 +65,12 @@ class ImageSelector {
 
     render() {
         $('.download-filename').val(this.filename);
-        var html = $(JST['download-image-container']({urls:this.urls}));
-        var $fragment = $(html);
-        $fragment.find('img')
-            .on('load', (e) => this.onLoadImage(e))
-            .on('error', (e) => this.onErrorLoadingImage(e));
-        $('.imazip-content').append($fragment);
+        var $elements = this.urls.map((url) => {
+            var $container = $(JST['download-image-container']({url:url}));
+            new ImageContainer({url:url, $el:$container});
+            return $container;
+        })
+        $('.imazip-content').append($elements);
 
         this.resizeImage(5);
     }
@@ -79,18 +110,6 @@ class ImageSelector {
 
     private onClickImage(e) {
         $(e.currentTarget).toggleClass('checked');
-    }
-
-    private onLoadImage(e) {
-        var img = <HTMLImageElement>e.target;
-        if (img.naturalHeight < 100 || img.naturalWidth < 100) {
-            $(img).closest('.image-container').hide();
-        }
-    }
-
-    private onErrorLoadingImage(e) {
-        var img = <HTMLImageElement>e.target;
-        $(img).closest('.image-container').hide();
     }
 
     private onDblClickImage(e) {
@@ -137,5 +156,5 @@ class ImageSelector {
 }
 
 $(function() {
-    new ImageSelector();
+    new Downloader();
 });
