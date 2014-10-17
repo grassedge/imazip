@@ -38,6 +38,7 @@ chrome.browserAction.onClicked.addListener(function() {
 // ---- page handler ----
 
 var stock:string[] = [];
+var title:string;
 
 chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
     if (req.name === 'imazip:url:picked') {
@@ -67,6 +68,7 @@ chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
             var imageUrls = urls.filter((urlSet) => urlSet.url ? true : false)
                                 .map((urlSet):string => urlSet.url);
             stock = imageUrls;
+            title = req.title;
             chrome.browserAction.setBadgeText({ tabId: sender.tab.id, text: '' });
             chrome.tabs.create({url:"html/download.html"});
         });
@@ -74,7 +76,7 @@ chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
     }
 
     if (req.name === 'imazip:page:loaded') {
-        sendResponse({urls:stock, title:req.title});
+        sendResponse({urls:stock, title:title});
     }
 
     if (req.name === 'imazip') {
