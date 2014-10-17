@@ -83,7 +83,21 @@ chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
         var page_url = req.page_url;
         var urls     = req.urls;
         var filename = req.filename.replace(/[:\/|"*<>?]/g, '');
+        var zipping  = req.zipping;
         filename += filename.match(/\.zip$/) ? '' : '.zip';
+
+        if (!zipping) {
+            urls.forEach(function(url) {
+                chrome.downloads.download({
+                    url:url,
+                    filename:url.replace(/^(.*)\//, '').replace(/\?(.*)$/, ''),
+                }, function() {
+                    console.log('complete');
+                    sendResponse('complete');
+                })
+            });
+            return;
+        }
 
         var zip = new JSZip();
 

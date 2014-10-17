@@ -92,6 +92,7 @@ class Downloader {
     }
 
     private onClickDownload(e) {
+        var zipping = this.$el.find('.zipping').prop('checked');
         var filename = this.$el.find('.download-filename').val();
         var urls = Array.prototype.map.call(
             this.$el.find('.image-container.checked:visible img'),
@@ -101,7 +102,8 @@ class Downloader {
             name: "imazip",
             page_url: location.href,
             urls: urls,
-            filename: filename
+            filename: filename,
+            zipping: zipping,
         }, function(res) {
             console.log(res);
             this.$el.remove();
