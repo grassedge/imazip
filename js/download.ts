@@ -13,7 +13,6 @@ class ImageSelector {
         this.$el = $(document.body);
 
         this.callbacks = {
-            onMessage: (e) => { this.onMessage(e) },
             onClickClose: (e) => { this.onClickClose(e) },
             onClickDownload: (e) => { this.onClickDownload(e) },
             onClickImage: (e) => { this.onClickImage(e) },
@@ -23,7 +22,6 @@ class ImageSelector {
             onChangeImageUrlFilter: (e) => { this.onChangeImageUrlFilter(e) },
         };
 
-        chrome.runtime.onMessage.addListener(this.callbacks.onMessage);
         this.$el.on('click', '.close-button', this.callbacks.onClickClose);
         this.$el.on('click', '.download-button', this.callbacks.onClickDownload);
         this.$el.on('click', '.image-container', this.callbacks.onClickImage);
@@ -31,6 +29,7 @@ class ImageSelector {
         this.$el.on('change', '.image-size', this.callbacks.onChangeImageSize);
         this.$el.on('change', '.image-size-filter', this.callbacks.onChangeImageSizeFilter);
         this.$el.on('input', '.image-url-filter', this.callbacks.onChangeImageUrlFilter);
+        this.fetchUrls();
     }
 
     render() {
@@ -51,12 +50,14 @@ class ImageSelector {
         this.$el.find('.image-container').css({height:size, width:size});
     }
 
-    private onMessage(req /* , sender, sendResponse */) {
-        this.urls    = req.urls;
-        this.pageUrl = req.pageUrl;
-        this.filename = req.title;
-
-        this.render();
+    private fetchUrls() {
+        chrome.runtime.sendMessage({
+            name: "imazip:page:loaded",
+        }, (res:{urls:string[];title:string;}) => {
+            this.urls    = res.urls;
+            this.filename = res.title;
+            this.render();
+        });
     }
 
     private onClickDownload(e) {

@@ -6,7 +6,11 @@ declare var Promise:any;
 declare var JSZip:any;
 declare var URI:any;
 
+// ---- initialize ----
+
 chrome.browserAction.setBadgeBackgroundColor({ color: '#00FF00' });
+
+// ---- extention button handler ----
 
 chrome.browserAction.onClicked.addListener(function() {
 
@@ -31,6 +35,10 @@ chrome.browserAction.onClicked.addListener(function() {
     });
 });
 
+// ---- page handler ----
+
+var stock:string[] = [];
+
 chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
     if (req.name === 'imazip:url:picked') {
         var pageUrl = sender.url;
@@ -44,10 +52,10 @@ chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
             converters.filter((c) => !!pageUrl.match(c.pageUrl.regexp))
                       .map((c) => c.filterScript());
 
-        // コンバータを適用する
+        // コンバータを適用する. ここ結構難しい
         var promise = convertersForSenderPage.reduce(
             (promise:JQueryPromise<any>, converter) => {
-                return promise.then((...urls) => {
+                return promise.then((...urls:any[]) => {
                     return $.when.apply($, converter(urls));
                 });
             },
@@ -58,13 +66,15 @@ chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
         promise.then((...urls:any[]) => {
             var imageUrls = urls.filter((urlSet) => urlSet.url ? true : false)
                                 .map((urlSet):string => urlSet.url);
-
+            stock = imageUrls;
             chrome.browserAction.setBadgeText({ tabId: sender.tab.id, text: '' });
-            chrome.tabs.create({url:"html/download.html"}, function(tab) {
-                chrome.tabs.sendMessage(tab.id, {urls:imageUrls, title:req.title});
-            });
+            chrome.tabs.create({url:"html/download.html"});
         });
 
+    }
+
+    if (req.name === 'imazip:page:loaded') {
+        sendResponse({urls:stock, title:req.title});
     }
 
     if (req.name === 'imazip') {
