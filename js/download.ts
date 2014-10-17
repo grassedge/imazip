@@ -20,6 +20,7 @@ class ImageSelector {
             onDblClickImage: (e) => { this.onDblClickImage(e) },
             onChangeImageSize: (e) => { this.onChangeImageSize(e) },
             onChangeImageSizeFilter: (e) => { this.onChangeImageSizeFilter(e) },
+            onChangeImageUrlFilter: (e) => { this.onChangeImageUrlFilter(e) },
         };
 
         chrome.runtime.onMessage.addListener(this.callbacks.onMessage);
@@ -29,6 +30,7 @@ class ImageSelector {
         this.$el.on('dblclick', '.image-container', this.callbacks.onDblClickImage);
         this.$el.on('change', '.image-size', this.callbacks.onChangeImageSize);
         this.$el.on('change', '.image-size-filter', this.callbacks.onChangeImageSizeFilter);
+        this.$el.on('input', '.image-url-filter', this.callbacks.onChangeImageUrlFilter);
     }
 
     render() {
@@ -81,14 +83,13 @@ class ImageSelector {
     private onLoadImage(e) {
         var img = <HTMLImageElement>e.target;
         if (img.naturalHeight < 100 || img.naturalWidth < 100) {
-            // $(img).closest('.image-container').removeClass('checked');
-            $(img).closest('.image-container').hide();//removeClass('checked');
+            $(img).closest('.image-container').hide();
         }
     }
 
     private onErrorLoadingImage(e) {
         var img = <HTMLImageElement>e.target;
-        $(img).closest('.image-container').hide();//removeClass('checked');
+        $(img).closest('.image-container').hide();
     }
 
     private onDblClickImage(e) {
@@ -118,6 +119,18 @@ class ImageSelector {
             } else if (direction === 'height') {
                 return img.naturalHeight > $target.val()
             }
+        }).show();
+    }
+
+    private onChangeImageUrlFilter(e) {
+        var $target = $(e.target);
+        var pattern = $target.val();
+
+        var $containers = this.$el.find('.image-container');
+        $containers.hide();
+        $containers.filter((idx, el) => {
+            var img = el.querySelector('img');
+            return (new RegExp(pattern)).test(img.src);
         }).show();
     }
 }
