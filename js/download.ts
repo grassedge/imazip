@@ -37,6 +37,8 @@ class Downloader {
     urls: string[];
     pageUrl: string;
     filename: string;
+    filterWidth: number = 100;
+    filterHeight: number = 100;
     $el: JQuery;
     callbacks: any;
 
@@ -48,7 +50,7 @@ class Downloader {
             onClickDownload: (e) => { this.onClickDownload(e) },
             onClickImage: (e) => { this.onClickImage(e) },
             onDblClickImage: (e) => { this.onDblClickImage(e) },
-            onChangeImageSize: (e) => { this.onChangeImageSize(e) },
+            onChangeImageSizeDisplay: (e) => { this.onChangeImageSizeDisplay(e) },
             onChangeImageSizeFilter: (e) => { this.onChangeImageSizeFilter(e) },
             onChangeImageUrlFilter: (e) => { this.onChangeImageUrlFilter(e) },
         };
@@ -57,7 +59,7 @@ class Downloader {
         this.$el.on('click', '.download-button', this.callbacks.onClickDownload);
         this.$el.on('click', '.image-container', this.callbacks.onClickImage);
         this.$el.on('dblclick', '.image-container', this.callbacks.onDblClickImage);
-        this.$el.on('change', '.image-size', this.callbacks.onChangeImageSize);
+        this.$el.on('change', '.image-size', this.callbacks.onChangeImageSizeDisplay);
         this.$el.on('change', '.image-size-filter', this.callbacks.onChangeImageSizeFilter);
         this.$el.on('input', '.image-url-filter', this.callbacks.onChangeImageUrlFilter);
         this.fetchUrls();
@@ -123,7 +125,7 @@ class Downloader {
         close();
     }
 
-    private onChangeImageSize(e) {
+    private onChangeImageSizeDisplay(e) {
         var range = $(e.target).val();
         this.resizeImage(6 - range);
     }
@@ -131,16 +133,18 @@ class Downloader {
     private onChangeImageSizeFilter(e) {
         var $target = $(e.target);
         var direction = $target.attr('date-direction');
+        if (direction === 'width') {
+            this.filterWidth = +$target.val();
+        } else if (direction === 'height') {
+            this.filterHeight = +$target.val();
+        }
 
         var $containers = this.$el.find('.image-container');
         $containers.hide();
         $containers.filter((idx, el) => {
             var img = el.querySelector('img');
-            if (direction === 'width') {
-                return img.naturalWidth > $target.val()
-            } else if (direction === 'height') {
-                return img.naturalHeight > $target.val()
-            }
+            return img.naturalWidth > this.filterWidth
+                && img.naturalHeight > this.filterHeight;
         }).show();
     }
 
