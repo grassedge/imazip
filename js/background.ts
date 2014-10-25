@@ -55,18 +55,20 @@ chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
 
         // コンバータを適用する. ここ結構難しい
         var promise = convertersForSenderPage.reduce(
-            (promise:JQueryPromise<any>, converter) => {
-                return promise.then((...urls:any[]) => {
-                    return $.when.apply($, converter(urls));
+            (promise, converter) => {
+                return promise.then((urls:any[]) => {
+                    return Promise.all(converter(urls))
                 });
             },
-            $.when.apply($, urls)
-        );
+            Promise.all(urls)
+        )
+
 
         // 全てのコンバータが適用されたら、画像の url を取り出しベージを開く
-        promise.then((...urls:any[]) => {
-            var imageUrls = urls.filter((urlSet) => urlSet.url ? true : false)
-                                .map((urlSet):string => urlSet.url);
+        promise.then((urls:any[]) => {
+            var imageUrls = urls
+                .filter((urlSet) => urlSet.url ? true : false)
+                .map((urlSet):string => urlSet.url);
             stock = imageUrls;
             title = req.title;
             chrome.browserAction.setBadgeText({ tabId: sender.tab.id, text: '' });
