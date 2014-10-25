@@ -1,4 +1,3 @@
-/// <reference path="../d.ts/DefinitelyTyped/jquery/jquery.d.ts" />
 /// <reference path="./converter.ts" />
 
 declare var chrome:any;
