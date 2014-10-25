@@ -66,7 +66,7 @@ class IndexedList<T extends Indexed> {
 
     sort(compare:(a:T, b:T) => number):IndexedList<T> {
         var sorted = this.list.sort(compare);
-        return new IndexedList(sorted);
+        return new IndexedList<T>(sorted);
     }
 
     // map(callback:any):IndexedList<T> {
