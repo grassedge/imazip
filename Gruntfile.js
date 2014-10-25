@@ -26,22 +26,22 @@ module.exports = function(grunt) {
             download: {
                 src: ['js/download.ts'],
                 dest: 'js/download.js',
-                options: { ignoreTypeCheck: true }
+                options: { ignoreError: true }
             },
             'pick-url': {
                 src: ['js/pick-url.ts'],
                 dest: 'js/pick-url.js',
-                options: { ignoreTypeCheck: true }
+                options: { ignoreError: true }
             },
             option: {
                 src: ['js/options.ts'],
                 dest: 'js/options.js',
-                options: { ignoreTypeCheck: true }
+                options: { ignoreError: true }
             },
             background: {
                 src: ['js/background.ts'],
                 dest: 'js/background.js',
-                options: { ignoreTypeCheck: true }
+                options: { ignoreError: true }
             }
         },
 
