@@ -112,7 +112,7 @@ class Downloader {
     }
 
     private onClickImage(e) {
-        if ($(e.target).hasClass('image-url')) return;
+        if ($(e.target).closest('.image-meta-container').length !== 0) return;
         $(e.currentTarget).toggleClass('checked');
     }
 
