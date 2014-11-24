@@ -1,7 +1,7 @@
 {
     "name": "imazip",
     "description": "Download images in web page as a zip file.",
-    "version": "0.1.7",
+    "version": "0.1.8",
     "manifest_version": 2,
     "background": {
         "scripts": [

@@ -127,9 +127,9 @@ class Downloader {
 
     private onInputImageSizeFilter(e) {
         var $target = $(e.target);
-        $target.parent().find('.image-size-filter-value').val($target.val())
+        $target.parent().find('.image-size-filter').val($target.val())
 
-        var direction = $target.attr('date-direction');
+        var direction = $target.closest('[data-direction]').attr('data-direction');
         if (direction === 'width') {
             this.filterWidth = +$target.val();
         } else if (direction === 'height') {
