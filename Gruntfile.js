@@ -78,8 +78,12 @@ module.exports = function(grunt) {
                 files: ['js/background.ts'],
                 tasks: ['typescript:background']
             },
+            'less-download': {
+                files: ['css/download.less'],
+                tasks: ['less:pc']
+            }
         }
     });
 
-    grunt.task.registerTask('default', ['jst', 'typescript', 'watch']);
+    grunt.task.registerTask('default', ['jst', 'typescript', 'less', 'watch']);
 };
