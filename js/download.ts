@@ -51,7 +51,7 @@ class Downloader {
             onClickImage: (e) => { this.onClickImage(e) },
             onDblClickImage: (e) => { this.onDblClickImage(e) },
             onChangeImageSizeDisplay: (e) => { this.onChangeImageSizeDisplay(e) },
-            onChangeImageSizeFilter: (e) => { this.onChangeImageSizeFilter(e) },
+            onInputImageSizeFilter: (e) => { this.onInputImageSizeFilter(e) },
             onChangeImageUrlFilter: (e) => { this.onChangeImageUrlFilter(e) },
         };
 
@@ -60,7 +60,7 @@ class Downloader {
         this.$el.on('click', '.image-container', this.callbacks.onClickImage);
         this.$el.on('dblclick', '.image-container', this.callbacks.onDblClickImage);
         this.$el.on('change', '.image-size', this.callbacks.onChangeImageSizeDisplay);
-        this.$el.on('change', '.image-size-filter', this.callbacks.onChangeImageSizeFilter);
+        this.$el.on('input', '.image-size-filter', this.callbacks.onInputImageSizeFilter);
         this.$el.on('input', '.image-url-filter', this.callbacks.onChangeImageUrlFilter);
         this.fetchUrls();
     }
@@ -130,8 +130,10 @@ class Downloader {
         this.resizeImage(6 - range);
     }
 
-    private onChangeImageSizeFilter(e) {
+    private onInputImageSizeFilter(e) {
         var $target = $(e.target);
+        $target.parent().find('.image-size-filter-value').val($target.val())
+
         var direction = $target.attr('date-direction');
         if (direction === 'width') {
             this.filterWidth = +$target.val();

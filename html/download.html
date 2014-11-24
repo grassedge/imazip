@@ -17,9 +17,20 @@
         <label>zip<input class="zipping" type="checkbox" checked /></label>
       </div>
       <div>
-        <input class="image-size-filter" date-direction="width" type="range" value="100" max="3000" />
-        <input class="image-size-filter" date-direction="height" type="range" value="100" max="3000" />
-        <input class="image-url-filter" type="text" />
+        <label>
+          <span>min width</span>
+          <input class="image-size-filter-value" type="text" value="100" />
+          <input class="image-size-filter" date-direction="width" type="range" value="100" max="3000" />
+        </label>
+        <label>
+          <span>min height</span>
+          <input class="image-size-filter-value" type="text" value="100" />
+          <input class="image-size-filter" date-direction="height" type="range" value="100" max="3000" />
+        </label>
+        <label>
+          <span>filter url</span>
+          <input class="image-url-filter" type="text" />
+        </label>
       </div>
       <div class="imazip-content">
       </div>
