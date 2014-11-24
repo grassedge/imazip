@@ -49,7 +49,6 @@ class Downloader {
             onClickClose: (e) => { this.onClickClose(e) },
             onClickDownload: (e) => { this.onClickDownload(e) },
             onClickImage: (e) => { this.onClickImage(e) },
-            onDblClickImage: (e) => { this.onDblClickImage(e) },
             onChangeImageSizeDisplay: (e) => { this.onChangeImageSizeDisplay(e) },
             onInputImageSizeFilter: (e) => { this.onInputImageSizeFilter(e) },
             onChangeImageUrlFilter: (e) => { this.onChangeImageUrlFilter(e) },
@@ -58,7 +57,6 @@ class Downloader {
         this.$el.on('click', '.close-button', this.callbacks.onClickClose);
         this.$el.on('click', '.download-button', this.callbacks.onClickDownload);
         this.$el.on('click', '.image-container', this.callbacks.onClickImage);
-        this.$el.on('dblclick', '.image-container', this.callbacks.onDblClickImage);
         this.$el.on('change', '.image-size', this.callbacks.onChangeImageSizeDisplay);
         this.$el.on('input', '.image-size-filter', this.callbacks.onInputImageSizeFilter);
         this.$el.on('input', '.image-url-filter', this.callbacks.onChangeImageUrlFilter);
@@ -79,8 +77,9 @@ class Downloader {
 
     private resizeImage(imageNum:number) {
         var containerWidth = $('.imazip-container').width();
-        var size = (containerWidth / imageNum) - 26;
-        this.$el.find('.image-container').css({height:size, width:size});
+        var size = (containerWidth / imageNum) - 28;
+        this.$el.find('.image-container').css({width:size});
+        this.$el.find('.image-content').css({width:size});
     }
 
     private fetchUrls() {
@@ -113,12 +112,8 @@ class Downloader {
     }
 
     private onClickImage(e) {
+        if ($(e.target).hasClass('image-url')) return;
         $(e.currentTarget).toggleClass('checked');
-    }
-
-    private onDblClickImage(e) {
-        var url = $(e.currentTarget).find('img').attr('src');
-        window.open(url);
     }
 
     private onClickClose(e) {

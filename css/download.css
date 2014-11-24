@@ -133,15 +133,38 @@ input:checked + .zip-label {
   border: 1px solid #4076ff;
 }
 .image-container {
-    margin:13px;
-    text-align:center;
-    border: 4px solid transparent;
-    box-shadow: 0 0 5px 0 #aaa;
-    border-radius: 5px;
-    background-color: white;
+  position: relative;
+  box-sizing: content-box;
+  padding: 0;
+  margin: 10px;
+  text-align: center;
+  border: 4px solid transparent;
+  box-shadow: 0 0 5px 0 #aaa;
+  border-radius: 5px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
 }
 .image-container.checked {
-    border-color: #14afd6;
+  border-color: #14afd6;
+}
+.image-meta-container {
+  position: absolute;
+  bottom: 0px;
+  border-top: 1px solid #ddd;
+  box-sizing: border-box;
+  width: 100%;
+  text-align: right;
+  padding: 3px;
+  background-color: #f9f9f9;
+  color: #888;
+  text-shadow: 0 1px 1px #fff;
+}
+.image-url {
+  display: block;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  color: #888;
 }
 .imazip-image {
   max-height: 100%;

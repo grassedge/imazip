@@ -1,9 +1,14 @@
-<div class="image-container checked" style="position:relative">
-  <img class="imazip-image" src="<%= url %>">
-  <div style="position:absolute;bottom:20px;right:5px;">
-    <span class="image-size-width-label"></span> x
-    <span class="image-size-height-label"></span>
+<div class="image-container checked" style="align-items: center">
+  <div class="image-content">
+    <img class="imazip-image" src="<%= url %>">
   </div>
-  <a class="image-url" style="display:block;position:absolute;bottom:5px;left:5px;right:5px;overflow-x:hidden;text-overflow:ellipsis">
-  </a>
+  <div class="image-meta-container">
+    <div>
+      <span class="image-size-width-label"></span> x
+      <span class="image-size-height-label"></span>
+    </div>
+    <div class="image-url-container">
+      <a class="image-url" target="_blank" href="<%= url %>"></a>
+    </div>
+  </div>
 </div>
