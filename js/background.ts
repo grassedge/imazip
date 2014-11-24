@@ -1,3 +1,5 @@
+// <reference path="../typings/urijs/URI.d.ts" />
+// <reference path="../typings/jszip/jszip.d.ts" />
 /// <reference path="./converter.ts" />
 
 declare var chrome:any;

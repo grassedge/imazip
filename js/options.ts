@@ -1,4 +1,4 @@
-/// <reference path="../d.ts/DefinitelyTyped/jquery/jquery.d.ts" />
+/// <reference path="../typings/jquery/jquery.d.ts" />
 /// <reference path="./util.ts" />
 /// <reference path="./converter.ts" />
 
