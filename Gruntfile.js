@@ -3,6 +3,7 @@ module.exports = function(grunt) {
 
     grunt.loadNpmTasks('grunt-contrib-jst');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-typescript');
 
     grunt.initConfig({
@@ -43,6 +44,17 @@ module.exports = function(grunt) {
                 dest: 'js/background.js',
                 options: { ignoreError: true }
             }
+        },
+
+        less: {
+            options: {
+                compress: false
+            },
+            pc: {
+                files: {
+                    'css/download.css': 'css/download.less'
+                }
+            },
         },
 
         watch: {

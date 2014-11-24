@@ -6,6 +6,7 @@
         "grunt": "~0.4",
         "grunt-contrib-jst": "*",
         "grunt-contrib-watch": "*",
+        "grunt-contrib-less": "*",
         "grunt-typescript": "*"
     }
 }
