@@ -21,7 +21,7 @@ class ImageContainer {
     private onLoadImage(e) {
         var img = <HTMLImageElement>e.target;
         if (img.naturalHeight < 100 || img.naturalWidth < 100) {
-            $(img).closest('.image-container').hide();
+            this.$el.hide();
         }
         this.$el.find('.image-size-width-label').text(img.naturalWidth);
         this.$el.find('.image-size-height-label').text(img.naturalHeight);
