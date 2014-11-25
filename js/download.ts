@@ -15,6 +15,7 @@ class ImageContainer {
 
         this.$el.find('img').on('load', (e) => this.onLoadImage(e))
         this.$el.find('img').on('error', (e) => this.onErrorLoadingImage(e));
+        this.$el.on('click', (e) => this.onClickImage(e));
     }
 
     private onLoadImage(e) {
@@ -30,6 +31,11 @@ class ImageContainer {
     private onErrorLoadingImage(e) {
         var img = <HTMLImageElement>e.target;
         $(img).closest('.image-container').hide();
+    }
+
+    private onClickImage(e) {
+        if ($(e.target).closest('.image-meta-container').length !== 0) return;
+        this.$el.toggleClass('checked');
     }
 }
 
@@ -48,7 +54,6 @@ class Downloader {
         this.callbacks = {
             onClickClose: (e) => { this.onClickClose(e) },
             onClickDownload: (e) => { this.onClickDownload(e) },
-            onClickImage: (e) => { this.onClickImage(e) },
             onChangeImageSizeDisplay: (e) => { this.onChangeImageSizeDisplay(e) },
             onInputImageSizeFilter: (e) => { this.onInputImageSizeFilter(e) },
             onChangeImageUrlFilter: (e) => { this.onChangeImageUrlFilter(e) },
@@ -56,7 +61,6 @@ class Downloader {
 
         this.$el.on('click', '.close-button', this.callbacks.onClickClose);
         this.$el.on('click', '.download-button', this.callbacks.onClickDownload);
-        this.$el.on('click', '.image-container', this.callbacks.onClickImage);
         this.$el.on('change', '.image-size', this.callbacks.onChangeImageSizeDisplay);
         this.$el.on('input', '.image-size-filter', this.callbacks.onInputImageSizeFilter);
         this.$el.on('input', '.image-url-filter', this.callbacks.onChangeImageUrlFilter);
@@ -109,11 +113,6 @@ class Downloader {
             console.log(res);
             this.$el.remove();
         });
-    }
-
-    private onClickImage(e) {
-        if ($(e.target).closest('.image-meta-container').length !== 0) return;
-        $(e.currentTarget).toggleClass('checked');
     }
 
     private onClickClose(e) {
