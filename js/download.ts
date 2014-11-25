@@ -137,7 +137,7 @@ class Downloader {
         var $containers = this.$el.find('.image-container');
         $containers.hide();
         $containers.filter((idx, el) => {
-            var img = el.querySelector('img');
+            var img = <HTMLImageElement>el.querySelector('img');
             return img.naturalWidth > this.filterWidth
                 && img.naturalHeight > this.filterHeight;
         }).show();
@@ -150,7 +150,7 @@ class Downloader {
         var $containers = this.$el.find('.image-container');
         $containers.hide();
         $containers.filter((idx, el) => {
-            var img = el.querySelector('img');
+            var img = <HTMLImageElement>el.querySelector('img');
             return (new RegExp(pattern)).test(img.src);
         }).show();
     }
