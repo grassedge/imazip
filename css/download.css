@@ -144,9 +144,11 @@ input:checked + .zip-label {
   background-color: white;
   display: flex;
   flex-direction: column;
+  opacity: 0.3;
 }
 .image-container.checked {
   border-color: #14afd6;
+  opacity: 1;
 }
 .image-meta-container {
   position: absolute;
