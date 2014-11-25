@@ -8,7 +8,9 @@ __p += '<div class="image-container checked" style="align-items: center">\n  <di
 ((__t = ( url )) == null ? '' : __t) +
 '">\n  </div>\n  <div class="image-meta-container">\n    <div>\n      <span class="image-size-width-label"></span> x\n      <span class="image-size-height-label"></span>\n    </div>\n    <div class="image-url-container">\n      <a class="image-url" target="_blank" href="' +
 ((__t = ( url )) == null ? '' : __t) +
-'"></a>\n    </div>\n  </div>\n</div>\n';
+'">' +
+((__t = ( url )) == null ? '' : __t) +
+'</a>\n    </div>\n  </div>\n</div>\n';
 
 }
 return __p

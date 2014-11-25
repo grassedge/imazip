@@ -25,7 +25,6 @@ class ImageContainer {
         }
         this.$el.find('.image-size-width-label').text(img.naturalWidth);
         this.$el.find('.image-size-height-label').text(img.naturalHeight);
-        this.$el.find('.image-url').text(this.url);
     }
 
     private onErrorLoadingImage(e) {
