@@ -2,16 +2,37 @@
 declare var chrome:any;
 declare var JST:any;
 
-class ImageContainer {
+enum UrlType {
+    SRC,
+    ANCHOR
+}
+
+class ImageModel {
     url: string;
+    srcUrl: string;
+    anchorUrl: string;
+    appliedUrl: UrlType = UrlType.SRC;
+
+    width: number;
+    height: number;
+
+    isSelectedManually: bool;
+
+    constructor(url:string) {
+        this.url = url;
+    }
+}
+
+class ImageContainer {
+    imageModel: ImageModel;
     $el: JQuery;
 
     constructor(args: {
-        url:string;
+        imageModel: ImageModel;
         $el:JQuery
     }) {
-        this.url = args.url;
-        this.$el = args.$el;
+        this.imageModel = args.imageModel;
+        this.$el        = args.$el;
 
         this.$el.find('img').on('load', (e) => this.onLoadImage(e))
         this.$el.find('img').on('error', (e) => this.onErrorLoadingImage(e));
@@ -39,7 +60,7 @@ class ImageContainer {
 }
 
 class Downloader {
-    urls: string[];
+    imageModels: ImageModel[];
     pageUrl: string;
     filename: string;
     filterWidth: number = 100;
@@ -68,9 +89,9 @@ class Downloader {
 
     render() {
         $('.download-filename').val(this.filename);
-        var $elements = this.urls.map((url) => {
-            var $container = $(JST['download-image-container']({url:url}));
-            new ImageContainer({url:url, $el:$container});
+        var $elements = this.imageModels.map((imageModel) => {
+            var $container = $(JST['download-image-container']({url:imageModel.url}));
+            new ImageContainer({imageModel:imageModel, $el:$container});
             return $container;
         })
         $('.imazip-content').append($elements);
@@ -89,8 +110,8 @@ class Downloader {
         chrome.runtime.sendMessage({
             name: "imazip:page:loaded",
         }, (res:{urls:string[];title:string;}) => {
-            this.urls    = res.urls;
-            this.filename = res.title;
+            this.imageModels = res.urls.map((url) => new ImageModel(url));
+            this.filename    = res.title;
             this.render();
         });
     }
