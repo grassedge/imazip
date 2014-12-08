@@ -68,8 +68,8 @@ chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
         // 全てのコンバータが適用されたら、画像の url を取り出しベージを開く
         promise.then((urls:any[]) => {
             var imageUrls = urls
-                .filter((urlSet) => urlSet.url ? true : false)
-                .map((urlSet):string => urlSet.url);
+                .filter((urlSet) => urlSet.url ? true : false);
+
             stock = imageUrls;
             title = req.title;
             chrome.browserAction.setBadgeText({ tabId: sender.tab.id, text: '' });
