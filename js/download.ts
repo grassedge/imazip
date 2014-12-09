@@ -67,8 +67,16 @@ class ImageModel {
 class ImageService extends EventEmitter {
     constructor() { super() }
 
-    changeThumbnailFilter(isChecked:boolean) {
-        this.emit('change:thumbnailfilter', isChecked);
+    filterThumbnail(isChecked:boolean) {
+        this.emit('filter:thumbnail', isChecked);
+    }
+
+    filterImageBySize(width: number, height: number) {
+        this.emit('filter:image:size', { width: width, height: height });
+    }
+
+    filterImageByUrl(urlRegExp: RegExp) {
+        this.emit('filter:image:url', urlRegExp);
     }
 
     fetchUrls() {
@@ -83,9 +91,12 @@ class ImageService extends EventEmitter {
 // ---- controller ----
 
 class ImageContainer {
-    imageService: ImageService;
-    imageModel: ImageModel;
-    $el: JQuery;
+    private imageService: ImageService;
+    private imageModel: ImageModel;
+    private $el: JQuery;
+    private filterWidth : number = 100;
+    private filterHeight: number = 100;
+    private urlRegExp: RegExp = /(?:)/;
 
     constructor(args: {
         imageService: ImageService;
@@ -96,31 +107,54 @@ class ImageContainer {
         this.imageModel = args.imageModel;
         this.$el        = args.$el;
 
-        this.imageService.on('change:thumbnailfilter', this.onChangeThumbnailFilter);
+        this.imageService.on('filter:thumbnail', this.onFilterThumbnail);
+        this.imageService.on('filter:image:url', this.onFilterImageByUrl);
+        this.imageService.on('filter:image:size', this.onFilterImageBySize);
         this.$el.find('img').on('load', this.onLoadImage)
         this.$el.find('img').on('error', this.onErrorLoadingImage);
         this.$el.on('click', this.onClickImage);
     }
 
-    private onChangeThumbnailFilter = (e:boolean) => {
-        var src = e ? this.imageModel.anchorUrl : this.imageModel.srcUrl;
-        if (src) {
-            this.$el.find('.imazip-image').attr('src', src);
+    render() {
+        var img = <HTMLImageElement>this.$el.find('img')[0];
+        if (img.naturalWidth  > this.filterWidth &&
+            img.naturalHeight > this.filterHeight &&
+            this.imageModel.url &&
+            this.urlRegExp.test(this.imageModel.url)) {
+            this.$el.show();
         } else {
-            this.$el.hide()
+            this.$el.hide();
         }
+        this.$el.find('.image-size-width-label').text(img.naturalWidth);
+        this.$el.find('.image-size-height-label').text(img.naturalHeight);
+        this.$el.find('.image-url').attr('href', img.src).text(img.src);
+    }
+
+    private onFilterThumbnail = (useAnchorUrl:boolean) => {
+        this.imageModel.url = useAnchorUrl ? this.imageModel.anchorUrl
+                                           : this.imageModel.srcUrl;
+        if (this.imageModel.url) {
+            this.$el.find('.imazip-image').attr('src', this.imageModel.url);
+        }
+        this.render();
+    }
+
+    private onFilterImageByUrl = (urlRegExp: RegExp) => {
+        this.urlRegExp = urlRegExp;
+        this.render();
+    }
+
+    private onFilterImageBySize = (size: { width: number; height: number; }) => {
+        this.filterWidth = size.width;
+        this.filterHeight = size.height;
+        this.render();
     }
 
     private onLoadImage = (e) => {
         var img = <HTMLImageElement>e.target;
         this.imageModel.width  = img.naturalWidth;
         this.imageModel.height = img.naturalHeight;
-        if (img.naturalHeight < 100 || img.naturalWidth < 100) {
-            this.$el.hide();
-        }
-        this.$el.find('.image-size-width-label').text(img.naturalWidth);
-        this.$el.find('.image-size-height-label').text(img.naturalHeight);
-        this.$el.find('.image-url').attr('href', img.src).text(img.src);
+        this.render();
     }
 
     private onErrorLoadingImage = (e) => {
@@ -152,7 +186,7 @@ class Downloader {
         this.$el.on('change', '.image-size', this.onChangeImageSizeDisplay);
         this.$el.on('input', '.image-size-filter', this.onInputImageSizeFilter);
         this.$el.on('input', '.image-url-filter', this.onChangeImageUrlFilter);
-        this.$el.on('change', '.image-thumbnail-filter', this.onClickThumbnailFilter);
+        this.$el.on('change', '.image-thumbnail-filter', this.onChangeThumbnailFilterButton);
     }
 
     render() {
@@ -217,39 +251,21 @@ class Downloader {
     private onInputImageSizeFilter = (e) => {
         var $target = $(e.target);
         $target.parent().find('.image-size-filter').val($target.val())
-
-        var direction = $target.closest('[data-direction]').attr('data-direction');
-        if (direction === 'width') {
-            this.filterWidth = +$target.val();
-        } else if (direction === 'height') {
-            this.filterHeight = +$target.val();
-        }
-
-        var $containers = this.$el.find('.image-container');
-        $containers.hide();
-        $containers.filter((idx, el) => {
-            var img = <HTMLImageElement>el.querySelector('img');
-            return img.naturalWidth > this.filterWidth
-                && img.naturalHeight > this.filterHeight;
-        }).show();
+        var width  = this.$el.find('[data-direction="width"] .filter-value').val()
+        var height = this.$el.find('[data-direction="height"] .filter-value').val()
+        this.imageService.filterImageBySize(width, height);
     };
 
     private onChangeImageUrlFilter = (e) => {
         var $target = $(e.target);
         var pattern = $target.val();
-
-        var $containers = this.$el.find('.image-container');
-        $containers.hide();
-        $containers.filter((idx, el) => {
-            var img = <HTMLImageElement>el.querySelector('img');
-            return (new RegExp(pattern)).test(img.src);
-        }).show();
+        this.imageService.filterImageByUrl(new RegExp(pattern));
     };
 
-    private onClickThumbnailFilter = (e) => {
+    private onChangeThumbnailFilterButton = (e) => {
         var $target = $(e.target);
         var isChecked = $target.prop('checked');
-        this.imageService.changeThumbnailFilter(isChecked);
+        this.imageService.filterThumbnail(isChecked);
     };
 }
 
