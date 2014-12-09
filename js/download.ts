@@ -66,8 +66,17 @@ class ImageModel {
 
 class ImageService extends EventEmitter {
     constructor() { super() }
+
     changeThumbnailFilter(isChecked:boolean) {
         this.emit('change:thumbnailfilter', isChecked);
+    }
+
+    fetchUrls() {
+        chrome.runtime.sendMessage({
+            name: "imazip:page:loaded",
+        }, (res:{urls:UrlSet[];title:string;}) => {
+            this.emit('fetch:urls', res);
+        });
     }
 }
 
@@ -87,37 +96,39 @@ class ImageContainer {
         this.imageModel = args.imageModel;
         this.$el        = args.$el;
 
-        this.imageService.on('change:thumbnailfilter', (e) => this.onChangeThumbnailFilter(e));
-        this.$el.find('img').on('load', (e) => this.onLoadImage(e))
-        this.$el.find('img').on('error', (e) => this.onErrorLoadingImage(e));
-        this.$el.on('click', (e) => this.onClickImage(e));
+        this.imageService.on('change:thumbnailfilter', this.onChangeThumbnailFilter);
+        this.$el.find('img').on('load', this.onLoadImage)
+        this.$el.find('img').on('error', this.onErrorLoadingImage);
+        this.$el.on('click', this.onClickImage);
     }
 
-    private onChangeThumbnailFilter(e:boolean) {
+    private onChangeThumbnailFilter = (e:boolean) => {
         var src = e ? this.imageModel.anchorUrl : this.imageModel.srcUrl;
         if (src) {
             this.$el.find('.imazip-image').attr('src', src);
-            this.$el.find('.image-url').attr('href', src).text(src);
         } else {
             this.$el.hide()
         }
     }
 
-    private onLoadImage(e) {
+    private onLoadImage = (e) => {
         var img = <HTMLImageElement>e.target;
+        this.imageModel.width  = img.naturalWidth;
+        this.imageModel.height = img.naturalHeight;
         if (img.naturalHeight < 100 || img.naturalWidth < 100) {
             this.$el.hide();
         }
         this.$el.find('.image-size-width-label').text(img.naturalWidth);
         this.$el.find('.image-size-height-label').text(img.naturalHeight);
+        this.$el.find('.image-url').attr('href', img.src).text(img.src);
     }
 
-    private onErrorLoadingImage(e) {
+    private onErrorLoadingImage = (e) => {
         var img = <HTMLImageElement>e.target;
         $(img).closest('.image-container').hide();
     }
 
-    private onClickImage(e) {
+    private onClickImage = (e) => {
         if ($(e.target).closest('.image-meta-container').length !== 0) return;
         this.$el.toggleClass('checked');
     }
@@ -129,29 +140,19 @@ class Downloader {
     private filterWidth: number = 100;
     private filterHeight: number = 100;
     private $el: JQuery;
-    private callbacks: any;
     private imageService: ImageService;
 
-    constructor() {
-        this.$el = $(document.body);
-        this.imageService = new ImageService();
+    constructor(args: { $el: JQuery; imageService: ImageService; }) {
+        this.$el = args.$el;
+        this.imageService = args.imageService;
 
-        this.callbacks = {
-            onClickClose: (e) => { this.onClickClose(e) },
-            onClickDownload: (e) => { this.onClickDownload(e) },
-            onChangeImageSizeDisplay: (e) => { this.onChangeImageSizeDisplay(e) },
-            onInputImageSizeFilter: (e) => { this.onInputImageSizeFilter(e) },
-            onChangeImageUrlFilter: (e) => { this.onChangeImageUrlFilter(e) },
-            onClickThumbnailFilter: (e) => { this.onClickThumbnailFilter(e) },
-        };
-
-        this.$el.on('click', '.close-button', this.callbacks.onClickClose);
-        this.$el.on('click', '.download-button', this.callbacks.onClickDownload);
-        this.$el.on('change', '.image-size', this.callbacks.onChangeImageSizeDisplay);
-        this.$el.on('input', '.image-size-filter', this.callbacks.onInputImageSizeFilter);
-        this.$el.on('input', '.image-url-filter', this.callbacks.onChangeImageUrlFilter);
-        this.$el.on('change', '.image-thumbnail-filter', this.callbacks.onClickThumbnailFilter);
-        this.fetchUrls();
+        this.imageService.on('fetch:urls', this.onFetchUrls);
+        this.$el.on('click', '.close-button', this.onClickClose);
+        this.$el.on('click', '.download-button', this.onClickDownload);
+        this.$el.on('change', '.image-size', this.onChangeImageSizeDisplay);
+        this.$el.on('input', '.image-size-filter', this.onInputImageSizeFilter);
+        this.$el.on('input', '.image-url-filter', this.onChangeImageUrlFilter);
+        this.$el.on('change', '.image-thumbnail-filter', this.onClickThumbnailFilter);
     }
 
     render() {
@@ -177,17 +178,15 @@ class Downloader {
         this.$el.find('.image-content').css({width:size});
     }
 
-    private fetchUrls() {
-        chrome.runtime.sendMessage({
-            name: "imazip:page:loaded",
-        }, (res:{urls:UrlSet[];title:string;}) => {
-            this.imageModels = res.urls.map((url) => new ImageModel(url));
-            this.filename    = res.title;
-            this.render();
-        });
+    // handlers
+
+    private onFetchUrls = (res) => {
+        this.imageModels = res.urls.map((url) => new ImageModel(url));
+        this.filename    = res.title;
+        this.render();
     }
 
-    private onClickDownload(e) {
+    private onClickDownload = (e) => {
         var zipping = this.$el.find('.zipping').prop('checked');
         var filename = this.$el.find('.download-filename').val();
         var urls = Array.prototype.map.call(
@@ -204,18 +203,18 @@ class Downloader {
             console.log(res);
             this.$el.remove();
         });
-    }
+    };
 
-    private onClickClose(e) {
+    private onClickClose = (e) => {
         close();
-    }
+    };
 
-    private onChangeImageSizeDisplay(e) {
+    private onChangeImageSizeDisplay = (e) => {
         var range = $(e.target).val();
         this.resizeImage(6 - range);
-    }
+    };
 
-    private onInputImageSizeFilter(e) {
+    private onInputImageSizeFilter = (e) => {
         var $target = $(e.target);
         $target.parent().find('.image-size-filter').val($target.val())
 
@@ -233,9 +232,9 @@ class Downloader {
             return img.naturalWidth > this.filterWidth
                 && img.naturalHeight > this.filterHeight;
         }).show();
-    }
+    };
 
-    private onChangeImageUrlFilter(e) {
+    private onChangeImageUrlFilter = (e) => {
         var $target = $(e.target);
         var pattern = $target.val();
 
@@ -245,15 +244,21 @@ class Downloader {
             var img = <HTMLImageElement>el.querySelector('img');
             return (new RegExp(pattern)).test(img.src);
         }).show();
-    }
+    };
 
-    private onClickThumbnailFilter(e) {
+    private onClickThumbnailFilter = (e) => {
         var $target = $(e.target);
         var isChecked = $target.prop('checked');
         this.imageService.changeThumbnailFilter(isChecked);
-    }
+    };
 }
 
 $(function() {
-    new Downloader();
+    var imageService = new ImageService();
+    new Downloader({
+        $el: $(document.body),
+        imageService: imageService,
+    });
+
+    imageService.fetchUrls();
 });
