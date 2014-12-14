@@ -31,11 +31,6 @@ class EventEmitter {
     }
 }
 
-enum UrlType {
-    SRC,
-    ANCHOR
-}
-
 interface UrlSet {
     url      : string;
     srcUrl   : string;
@@ -48,7 +43,6 @@ class ImageModel {
     url: string;
     srcUrl: string;
     anchorUrl: string;
-    appliedUrl: UrlType = UrlType.SRC;
 
     width: number;
     height: number;
