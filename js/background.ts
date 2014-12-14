@@ -44,7 +44,10 @@ var title:string;
 chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
     if (req.name === 'imazip:url:picked') {
         var pageUrl = sender.url;
-        var urls    = req.urls;
+        var urls    = req.urls.map((urlSet) => {
+            urlSet.anchorUrl = URI.resolve(pageUrl, urlSet.anchorUrl);
+            return urlSet;
+        });
 
         var converters =
             JSON.parse(localStorage['converters'] || '[]').map((c) => new Converter(c));
