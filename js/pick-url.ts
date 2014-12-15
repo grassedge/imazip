@@ -43,8 +43,16 @@ class UrlPicker {
 
     private onClick(e) {
         var urls = Array.prototype.map.call($(e.target).find('img'), (img) => {
+            var anchorUrl = $(img).closest('a').attr('href');
+            // tumblr
+            if (img.src) {
+                var url = new URL(img.src);
+                if (url.hostname.match(/\d+\.media\.tumblr\.com/)) {
+                    anchorUrl = anchorUrl || img.src.replace(/_500\.jpg$/, '_1280.jpg');
+                }
+            }
             return {
-                anchorUrl : $(img).closest('a').attr('href'),
+                anchorUrl : anchorUrl,
                 srcUrl    : img.src,
                 url       : img.src,
             }
