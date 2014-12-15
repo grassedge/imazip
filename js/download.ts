@@ -37,12 +37,68 @@ interface UrlSet {
     anchorUrl: string;
 }
 
+interface URL {
+    href: string;
+    protocol: string;
+    host: string;
+    hostname: string;
+    port: string;
+    pathname: string;
+    search: string;
+    hash: string;
+    username: string;
+    password: string;
+    origin: string;
+    new(url: string): URL;
+}
+
+class ImazipURL {
+    href: string;
+    protocol: string;
+    host: string;
+    hostname: string;
+    port: string;
+    pathname: string;
+    search: string;
+    hash: string;
+    username: string;
+    password: string;
+    origin: string;
+
+    constructor(urlString: string) {
+        var url = new URL(urlString);
+        // google images
+        if (url.hostname + url.pathname === 'www.google.co.jp/imgres') {
+            var params = this.parseParams(url);
+            url = new URL(decodeURIComponent(decodeURIComponent(params.imgurl)));
+        }
+
+        this.href     = url.href;
+        this.protocol = url.protocol;
+        this.host     = url.host;
+        this.hostname = url.hostname;
+        this.port     = url.port;
+        this.pathname = url.pathname;
+        this.search   = url.search;
+        this.hash     = url.hash;
+        this.username = url.username;
+        this.password = url.password;
+        this.origin   = url.origin;
+    }
+
+    private parseParams(url: URL) {
+        return url.search.substr(1).split('&')
+            .map((kv) => kv.split('='))
+            .reduce((params, kv) => { params[kv[0]] = kv[1]; return params }, <any>{});
+    }
+};
+
 // ---- model ----
 
 class ImageModel {
-    url: string;
-    srcUrl: string;
-    anchorUrl: string;
+    url      : ImazipURL;
+    srcUrl   : ImazipURL;
+    anchorUrl: ImazipURL;
 
     width: number;
     height: number;
@@ -50,9 +106,9 @@ class ImageModel {
     isSelectedManually: bool;
 
     constructor(urlSet: UrlSet) {
-        this.url       = urlSet.url;
-        this.srcUrl    = urlSet.srcUrl;
-        this.anchorUrl = urlSet.anchorUrl;
+        this.url       = urlSet.url ? new ImazipURL(urlSet.url) : null;
+        this.srcUrl    = urlSet.srcUrl ? new ImazipURL(urlSet.srcUrl) : null;
+        this.anchorUrl = urlSet.anchorUrl ? new ImazipURL(urlSet.anchorUrl) : null;
     }
 }
 
@@ -114,10 +170,10 @@ class ImageContainer {
         if (img.naturalWidth  > this.filterWidth &&
             img.naturalHeight > this.filterHeight &&
             this.imageModel.url &&
-            this.urlRegExp.test(this.imageModel.url)) {
-            this.$el.show();
+            this.urlRegExp.test(this.imageModel.url.href)) {
+            this.$el.addClass('checked');
         } else {
-            this.$el.hide();
+            this.$el.removeClass('checked');
         }
         this.$el.find('.image-size-width-label').text(img.naturalWidth);
         this.$el.find('.image-size-height-label').text(img.naturalHeight);
@@ -128,7 +184,7 @@ class ImageContainer {
         this.imageModel.url = useAnchorUrl ? this.imageModel.anchorUrl
                                            : this.imageModel.srcUrl;
         if (this.imageModel.url) {
-            this.$el.find('.imazip-image').attr('src', this.imageModel.url);
+            this.$el.find('.imazip-image').attr('src', this.imageModel.url.href);
         }
         this.render();
     }
@@ -153,7 +209,7 @@ class ImageContainer {
 
     private onErrorLoadingImage = (e) => {
         var img = <HTMLImageElement>e.target;
-        $(img).closest('.image-container').hide();
+        $(img).closest('.image-container').removeClass('checked');
     }
 
     private onClickImage = (e) => {
@@ -186,7 +242,7 @@ class Downloader {
     render() {
         $('.download-filename').val(this.filename);
         var $elements = this.imageModels.map((imageModel) => {
-            var $container = $(JST['download-image-container']({url:imageModel.url}));
+            var $container = $(JST['download-image-container']({url:imageModel.url.href}));
             new ImageContainer({
                 imageService: this.imageService,
                 imageModel:imageModel,
