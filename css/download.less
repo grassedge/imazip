@@ -5,19 +5,27 @@
     box-sizing: border-box;
 }
 
-.imazip-container {
-    position: absolute;
-    width: 100%;
+html {
     height: 100%;
-    top: 0;
-    left: 0;
+}
+
+body {
+    height: 100%;
+    margin: 0;
+}
+
+.imazip-container {
+    height: 100%;
     background-color: #f1f1f1;
+    display: flex;
+    flex-direction: column;
 
     .imazip-header {
         background-color: white;
         border-bottom: solid 1px rgba(0,0,0,0.3);
         width: 100%;
         height: @header-height;
+        min-height: @header-height;
         padding: 10px;
 
         .zipping {
@@ -83,59 +91,62 @@
         }
     }
 
-    .imazip-content {
-        position: absolute;
-        top: @header-height + 50;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        overflow-y: scroll;
+    .imazip-main {
+        flex-grow: 1;
         display: flex;
-        flex-wrap: wrap;
 
-        .image-container {
-            position: relative;
-            box-sizing: content-box;
-            padding: 0;
-            margin:10px;
-            text-align:center;
-            border: 4px solid transparent;
-            box-shadow: 0 0 5px 0 #aaa;
-            border-radius: 5px;
-            background-color: white;
-            display: flex;
-            flex-direction: column;
-            opacity: 0.3;
-
-            .image-content {
-            }
-            .image-meta-container {
-                position: absolute;
-                bottom: 0px;
-                border-top: 1px solid #ddd;
-                box-sizing: border-box;
-                width: 100%;
-                text-align: right;
-                padding: 3px;
-                background-color: #f9f9f9;
-                color: #888;
-                text-shadow: 0 1px 1px #fff;
-            }
-            .image-url {
-                display: block;
-                overflow-x: hidden;
-                text-overflow: ellipsis;
-                color: #888;
-            }
-            .imazip-image {
-                max-height:100%;
-                max-width:100%;
-            }
+        .imazip-option {
+            min-width: 200px;
         }
-        .image-container.checked {
-            border-color: #14afd6;
-            opacity: 1;
+        .imazip-content {
+            overflow-y: scroll;
+
+            display: flex;
+            flex-wrap: wrap;
+
+            .image-container {
+                position: relative;
+                box-sizing: content-box;
+                padding: 0;
+                margin:10px;
+                text-align:center;
+                border: 4px solid transparent;
+                box-shadow: 0 0 5px 0 #aaa;
+                border-radius: 5px;
+                background-color: white;
+                display: flex;
+                flex-direction: column;
+                opacity: 0.3;
+
+                .image-content {
+                }
+                .image-meta-container {
+                    position: absolute;
+                    bottom: 0px;
+                    border-top: 1px solid #ddd;
+                    box-sizing: border-box;
+                    width: 100%;
+                    text-align: right;
+                    padding: 3px;
+                    background-color: #f9f9f9;
+                    color: #888;
+                    text-shadow: 0 1px 1px #fff;
+                }
+                .image-url {
+                    display: block;
+                    overflow-x: hidden;
+                    text-overflow: ellipsis;
+                    color: #888;
+                }
+                .imazip-image {
+                    max-height:100%;
+                    max-width:100%;
+                }
+            }
+            .image-container.checked {
+                border-color: #14afd6;
+                opacity: 1;
+            }
         }
     }
-
 }
