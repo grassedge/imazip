@@ -232,6 +232,7 @@ class Downloader {
 
         this.imageService.on('fetch:urls', this.onFetchUrls);
         this.$el.on('click', '.download-button', this.onClickDownload);
+        this.$el.on('click', '.tool-button', this.onClickToolButton);
         this.$el.on('change', '.image-size', this.onChangeImageSizeDisplay);
         this.$el.on('input', '.image-size-filter', this.onInputImageSizeFilter);
         this.$el.on('input', '.image-url-filter', this.onChangeImageUrlFilter);
@@ -286,6 +287,10 @@ class Downloader {
             console.log(res);
             this.$el.remove();
         });
+    };
+
+    private onClickToolButton = (e) => {
+        $('.imazip-tool').toggle();
     };
 
     private onChangeImageSizeDisplay = (e) => {
