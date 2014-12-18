@@ -255,7 +255,7 @@ class Downloader {
     }
 
     private resizeImage(imageNum:number) {
-        var containerWidth = $('.imazip-container').width();
+        var containerWidth = $('.imazip-content').width();
         var size = (containerWidth / imageNum) - 28;
         this.$el.find('.image-container').css({width:size});
         this.$el.find('.image-content').css({width:size});
