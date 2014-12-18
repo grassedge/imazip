@@ -11,34 +11,42 @@
   <body>
     <div class="imazip-container">
       <div class="imazip-header">
-        <i class="fi-wrench"></i>
-        <input class="download-filename" type="text" value="" />
-        <button class="download-button"><i class="fi-download"></i></button>
-        <label>
-          <span>display size</span>
-          <input class="image-size" type="range" min="1" max="5" value="1" />
-        </label>
-        <label>
-          <input class="zipping" type="checkbox" checked />
-          <span class="zip-label"><i class="fi-archive"></i></span>
-        </label>
+        <div class="tool-button-container">
+          <i class="fi-wrench tool-button"></i>
+        </div>
+        <div class="download-filename-container">
+          <input class="download-filename" type="text" value="" />
+        </div>
+        <div class="zipping-container">
+          <label>
+            <input class="zipping" type="checkbox" checked />
+            <span class="zip-label"><i class="fi-archive"></i></span>
+          </label>
+        </div>
+        <div class="download-button-container">
+          <i class="fi-download download-button"></i>
+        </div>
       </div>
       <div class="imazip-main">
         <div class="imazip-option">
-          <label data-direction="width">
+          <div>
+            <span>display size</span>
+            <input class="image-size" type="range" min="1" max="5" value="1" />
+          </div>
+          <div data-direction="width">
             <span>min width</span>
             <input class="image-size-filter filter-value" type="text" value="100" />
             <input class="image-size-filter filter-range" type="range" value="100" max="3000" />
-          </label>
-          <label data-direction="height">
+          </div>
+          <div data-direction="height">
             <span>min height</span>
             <input class="image-size-filter filter-value" type="text" value="100" />
             <input class="image-size-filter filter-range" type="range" value="100" max="3000" />
-          </label>
-          <label>
+          </div>
+          <div>
             <span>filter url (regular expression)</span>
             <input class="image-url-filter" type="text" />
-          </label>
+          </div>
           <label>
             <span class="">filter thumbnail</span>
             <input class="image-thumbnail-filter" type="checkbox" />
