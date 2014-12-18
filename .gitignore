@@ -1,4 +1,5 @@
 js/*.js
+css/*.css
 d.ts
 .DS_Store
 node_modules
