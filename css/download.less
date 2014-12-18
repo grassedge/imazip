@@ -1,3 +1,4 @@
+@import "lib/constants.less";
 @import "lib/mixin.less";
 
 * {
@@ -16,7 +17,7 @@
         background-color: white;
         border-bottom: solid 1px rgba(0,0,0,0.3);
         width: 100%;
-        height: 50px;
+        height: @header-height;
         padding: 10px;
 
         .zipping {
@@ -84,7 +85,7 @@
 
     .imazip-content {
         position: absolute;
-        top: 100px;
+        top: @header-height + 50;
         bottom: 0;
         left: 0;
         right: 0;
