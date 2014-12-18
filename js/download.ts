@@ -231,7 +231,6 @@ class Downloader {
         this.imageService = args.imageService;
 
         this.imageService.on('fetch:urls', this.onFetchUrls);
-        this.$el.on('click', '.close-button', this.onClickClose);
         this.$el.on('click', '.download-button', this.onClickDownload);
         this.$el.on('change', '.image-size', this.onChangeImageSizeDisplay);
         this.$el.on('input', '.image-size-filter', this.onInputImageSizeFilter);
@@ -287,10 +286,6 @@ class Downloader {
             console.log(res);
             this.$el.remove();
         });
-    };
-
-    private onClickClose = (e) => {
-        close();
     };
 
     private onChangeImageSizeDisplay = (e) => {

@@ -95,8 +95,7 @@ input:checked + .zip-label {
   border: 1px solid #4078c7;
   font-size: 1em;
 }
-.download-button,
-.close-button {
+.download-button {
   float: right;
   -webkit-user-select: none;
   background-color: #4d7bd6;
@@ -120,15 +119,9 @@ input:checked + .zip-label {
   text-shadow: rgba(0, 0, 0, 0.0980392) 0px 1px 1px;
   text-transform: uppercase;
   margin-left: 10px;
-}
-.download-button {
   right: 100px;
 }
-.close-button {
-  right: 13px;
-}
-.download-button:active,
-.close-button:active {
+.download-button:active {
   background-color: #5c92ff;
   border: 1px solid #4076ff;
 }
