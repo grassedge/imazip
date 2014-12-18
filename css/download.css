@@ -9,17 +9,17 @@
   left: 0;
   background-color: #f1f1f1;
 }
-.imazip-header {
+.imazip-container .imazip-header {
   background-color: white;
   border-bottom: solid 1px rgba(0, 0, 0, 0.3);
   width: 100%;
   height: 50px;
   padding: 10px;
 }
-.zipping {
+.imazip-container .imazip-header .zipping {
   display: none;
 }
-.zip-label {
+.imazip-container .imazip-header .zip-label {
   -webkit-user-select: none;
   background-color: #4d7bd6;
   background-image: -webkit-linear-gradient(top, #5689db 0%, #4d7bd6 100%);
@@ -45,21 +45,11 @@
   border: 1px solid #ccc;
   background-image: none;
 }
-input:checked + .zip-label {
+.imazip-container .imazip-header input:checked + .zip-label {
   background-color: #4d7bd6;
   background-image: none;
 }
-.imazip-content {
-  position: absolute;
-  top: 100px;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  overflow-y: scroll;
-  display: flex;
-  flex-wrap: wrap;
-}
-.download-filename {
+.imazip-container .imazip-header .download-filename {
   -webkit-appearance: none;
   -webkit-rtl-ordering: logical;
   -webkit-user-select: text;
@@ -91,11 +81,11 @@ input:checked + .zip-label {
   word-spacing: 0px;
   writing-mode: lr-tb;
 }
-.download-filename:focus {
+.imazip-container .imazip-header .download-filename:focus {
   border: 1px solid #4078c7;
   font-size: 1em;
 }
-.download-button {
+.imazip-container .imazip-header .download-button {
   float: right;
   -webkit-user-select: none;
   background-color: #4d7bd6;
@@ -121,11 +111,21 @@ input:checked + .zip-label {
   margin-left: 10px;
   right: 100px;
 }
-.download-button:active {
+.imazip-container .imazip-header .download-button:active {
   background-color: #5c92ff;
   border: 1px solid #4076ff;
 }
-.image-container {
+.imazip-container .imazip-content {
+  position: absolute;
+  top: 100px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow-y: scroll;
+  display: flex;
+  flex-wrap: wrap;
+}
+.imazip-container .imazip-content .image-container {
   position: relative;
   box-sizing: content-box;
   padding: 0;
@@ -139,11 +139,7 @@ input:checked + .zip-label {
   flex-direction: column;
   opacity: 0.3;
 }
-.image-container.checked {
-  border-color: #14afd6;
-  opacity: 1;
-}
-.image-meta-container {
+.imazip-container .imazip-content .image-container .image-meta-container {
   position: absolute;
   bottom: 0px;
   border-top: 1px solid #ddd;
@@ -155,13 +151,17 @@ input:checked + .zip-label {
   color: #888;
   text-shadow: 0 1px 1px #fff;
 }
-.image-url {
+.imazip-container .imazip-content .image-container .image-url {
   display: block;
   overflow-x: hidden;
   text-overflow: ellipsis;
   color: #888;
 }
-.imazip-image {
+.imazip-container .imazip-content .image-container .imazip-image {
   max-height: 100%;
   max-width: 100%;
+}
+.imazip-container .imazip-content .image-container.checked {
+  border-color: #14afd6;
+  opacity: 1;
 }
