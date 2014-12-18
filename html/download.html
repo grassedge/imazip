@@ -2,6 +2,7 @@
 <html>
   <head>
     <link rel="stylesheet" href="/css/download.css" />
+    <link rel="stylesheet" href="/css/foundation-icons.css" />
     <script type="text/javascript" src="/js/jquery-2.0.3.js"></script>
     <script type="text/javascript" src="/js/underscore.js"></script>
     <script type="text/javascript" src="/js/download-jst.js"></script>
@@ -10,15 +11,16 @@
   <body>
     <div class="imazip-container">
       <div class="imazip-header">
+        <i class="fi-list"></i>
         <input class="download-filename" type="text" value="" />
-        <button class="download-button">Download</button>
+        <button class="download-button"><i class="fi-download"></i></button>
         <label>
           <span>display size</span>
           <input class="image-size" type="range" min="1" max="5" value="1" />
         </label>
         <label>
           <input class="zipping" type="checkbox" checked />
-          <span class="zip-label">zip</span>
+          <span class="zip-label"><i class="fi-archive"></i></span>
         </label>
       </div>
       <div>
