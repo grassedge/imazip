@@ -29,30 +29,38 @@
       </div>
       <div class="imazip-main">
         <div class="imazip-tool">
-          <div>
-            <span>display size</span>
-            <input class="image-size" type="range" min="1" max="5" value="1" />
+          <div class="display-tool">
+            <i class="fi-monitor"></i>
+            <div>
+              <span>display size</span><br />
+              <input class="image-size" type="range" min="1" max="5" value="1" />
+            </div>
           </div>
-          <div data-direction="width">
-            <span>min width</span>
-            <input class="image-size-filter filter-value" type="text" value="100" />
-            <input class="image-size-filter filter-range" type="range" value="100" max="3000" />
+          <div class="filter-tool">
+            <i class="fi-filter"></i>
+            <div class="filter-container" data-direction="width">
+              <span>min width</span><br />
+              <input class="image-size-filter filter-value" type="text" value="100" /><br />
+              <input class="image-size-filter filter-range" type="range" value="100" max="3000" />
+            </div>
+            <div class="filter-container" data-direction="height">
+              <span>min height</span><br />
+              <input class="image-size-filter filter-value" type="text" value="100" /><br />
+              <input class="image-size-filter filter-range" type="range" value="100" max="3000" />
+            </div>
+            <div class="filter-container">
+              <span>filter url (regular expression)</span><br />
+              <input class="image-url-filter" type="text" />
+            </div>
+            <div class="filter-container" >
+              <label>
+                <span class="">filter thumbnail</span>
+                <input class="image-thumbnail-filter" type="checkbox" />
+              </label>
+            </div>
           </div>
-          <div data-direction="height">
-            <span>min height</span>
-            <input class="image-size-filter filter-value" type="text" value="100" />
-            <input class="image-size-filter filter-range" type="range" value="100" max="3000" />
-          </div>
-          <div>
-            <span>filter url (regular expression)</span>
-            <input class="image-url-filter" type="text" />
-          </div>
-          <label>
-            <span class="">filter thumbnail</span>
-            <input class="image-thumbnail-filter" type="checkbox" />
-          </label>
         </div>
-        <div class="imazip-content">
+        <div class="imazip-content span1">
         </div>
       </div>
     </div>

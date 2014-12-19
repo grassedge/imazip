@@ -97,6 +97,34 @@ body {
             width: 200px;
             min-width: 200px;
             border-right: 1px solid #c8c8c8;
+
+            color: #555;
+            text-align: center;
+
+            i {
+                font-size: 2em;
+            }
+
+            input[type=text],input[type=range] {
+                width: 90%;
+            }
+            input[type=text] {
+                border: 1px solid rgb(189, 189, 189);
+                border-radius: 3px;
+            }
+            .display-tool {
+                margin-top: 20px;
+            }
+            .filter-tool {
+                margin-top: 20px;
+                .filter-container {
+                    /* text-align: center; */
+                    margin: 10px 5px;
+                }
+            /* .image-size-filter { */
+            /*     width: 90%; */
+            /* } */
+            }
         }
         .imazip-content {
             overflow-y: scroll;
@@ -105,10 +133,25 @@ body {
             display: flex;
             flex-wrap: wrap;
 
+            &.span1 .image-container {
+                width: ~'calc(20% - 20px)';
+            }
+            &.span2 .image-container {
+                width: ~'calc(25% - 20px)';
+            }
+            &.span3 .image-container {
+                width: ~'calc(100% / 3 - 20px)';
+            }
+            &.span4 .image-container {
+                width: ~'calc(50% - 20px)';
+            }
+            &.span5 .image-container {
+                width: ~'calc(100% - 20px)';
+            }
+
             .image-container {
                 position: relative;
                 box-sizing: border-box;
-                width: ~'calc(20% - 20px)';
                 padding: 0;
                 margin:10px;
                 border: 4px solid transparent;

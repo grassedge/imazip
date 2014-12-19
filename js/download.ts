@@ -251,15 +251,15 @@ class Downloader {
             return $container;
         })
         $('.imazip-content').append($elements);
-
-        this.resizeImage(5);
     }
 
     private resizeImage(imageNum:number) {
-        var containerWidth = $('.imazip-content').width();
-        var size = (containerWidth / imageNum) - 28;
-        this.$el.find('.image-container').css({width:size});
-        this.$el.find('.image-content').css({width:size});
+        $('.imazip-content').removeClass('span1');
+        $('.imazip-content').removeClass('span2');
+        $('.imazip-content').removeClass('span3');
+        $('.imazip-content').removeClass('span4');
+        $('.imazip-content').removeClass('span5');
+        $('.imazip-content').addClass('span' + imageNum);
     }
 
     // handlers
@@ -295,7 +295,7 @@ class Downloader {
 
     private onChangeImageSizeDisplay = (e) => {
         var range = $(e.target).val();
-        this.resizeImage(6 - range);
+        this.resizeImage(range);
     };
 
     private onInputImageSizeFilter = (e) => {
