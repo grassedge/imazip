@@ -39,6 +39,10 @@ module.exports = function(grunt) {
                 dest: 'js/options.js',
                 options: { ignoreError: true }
             },
+            helpers: {
+                src: ['js/helpers/*.ts'],
+                options: { ignoreError: true }
+            },
             background: {
                 src: ['js/background.ts'],
                 dest: 'js/background.js',
@@ -77,6 +81,10 @@ module.exports = function(grunt) {
             'typescript-background': {
                 files: ['js/background.ts'],
                 tasks: ['typescript:background']
+            },
+            'typescript-helpers': {
+                files: ['js/helpers/*.ts'],
+                tasks: ['typescript:helpers']
             },
             'less-download': {
                 files: ['css/download.less'],

@@ -1,4 +1,4 @@
-js/*.js
+js/**/*.js
 css/*.css
 d.ts
 .DS_Store
