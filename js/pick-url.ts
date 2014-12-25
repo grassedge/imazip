@@ -42,21 +42,31 @@ class UrlPicker {
     }
 
     private onClick(e) {
-        var urls = Array.prototype.map.call($(e.target).find('img'), (img) => {
-            var anchorUrl = $(img).closest('a').attr('href');
-            // tumblr
-            if (img.src) {
-                var url = new URL(img.src);
-                if (url.hostname.match(/\d+\.media\.tumblr\.com/)) {
-                    anchorUrl = anchorUrl || img.src.replace(/_500\.jpg$/, '_1280.jpg');
+        // tumblr
+        var urls;
+        if (location.hostname === 'www.tumblr.com' && location.pathname.match(/^\/search\//)) {
+            urls = $(e.target).find('article').toArray().map((article) => {
+                var urlSetList = JSON.parse($(article).attr('data-imazip'));
+                return urlSetList.map((urlSet) => {
+                    return {
+                        anchorUrl : urlSet["high_res"],
+                        srcUrl    : urlSet["low_res"],
+                        url       : urlSet["low_res"],
+                    };
+                });
+            }).reduce((ary, urlSetList) => {
+                return ary.concat(urlSetList);
+            }, []);
+        } else {
+            urls = $(e.target).find('img').toArray().filter((img) => img.src).map((img) => {
+                var anchorUrl = $(img).closest('a').attr('href');
+                return {
+                    anchorUrl : anchorUrl,
+                    srcUrl    : img.src,
+                    url       : img.src,
                 }
-            }
-            return {
-                anchorUrl : anchorUrl,
-                srcUrl    : img.src,
-                url       : img.src,
-            }
-        });
+            });
+        }
         chrome.runtime.sendMessage({
             name: "imazip:url:picked",
             urls: urls,
