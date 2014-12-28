@@ -6,42 +6,33 @@ class UrlPicker {
     HIGHLIGHT_SHADOW:string = '0 0 30px rgba(0,0,128,0.5)';
     originalShadow:any;
     highlightTarget:any;
-    callbacks:any;
 
     constructor() {
-        this.callbacks = {
-            onMessage   : (e) => this.onMessage(e),
-            onMouseover : (e) => this.onMouseover(e),
-            onMouseout  : (e) => this.onMouseout(e),
-            onClick     : (e) => this.onClick(e),
-            onEnd       : (e) => this.onEnd(e),
-        };
-
-        chrome.runtime.onMessage.addListener(this.callbacks.onMessage);
-        $(document.body).on('mouseover',  this.callbacks.onMouseover);
-        $(document.body).on('mouseout',   this.callbacks.onMouseout);
-        $(document.body).on('click',      this.callbacks.onClick);
-        $(document.body).on('imazip:end', this.callbacks.onEnd);
+        chrome.runtime.onMessage.addListener(this.onMessage);
+        $(document.body).on('mouseover',  this.onMouseover);
+        $(document.body).on('mouseout',   this.onMouseout);
+        $(document.body).on('click',      this.onClick);
+        $(document.body).on('imazip:end', this.onEnd);
     }
 
-    private onMessage(e) {
+    private onMessage = (e) => {
         if (e.command === 'imazip:end') {
             $(document.body).trigger('imazip:end');
         }
     }
 
-    private onMouseover(e) {
+    private onMouseover = (e) => {
         var target = this.highlightTarget = e.target;
         this.originalShadow = $(e.target).css('box-shadow');
         $(e.target).css({'box-shadow':this.HIGHLIGHT_SHADOW});
     }
 
-    private onMouseout(e) {
+    private onMouseout = (e) => {
         var target = e.target;
         $(e.target).css({'box-shadow':this.originalShadow});
     }
 
-    private onClick(e) {
+    private onClick = (e) => {
         // tumblr
         var urls;
         if (location.hostname === 'www.tumblr.com' && location.pathname.match(/^\/search\//)) {
@@ -75,13 +66,13 @@ class UrlPicker {
         $(document.body).trigger('imazip:end');
     }
 
-    private onEnd(e) {
+    private onEnd = (e) => {
         $(this.highlightTarget).css({'box-shadow':this.originalShadow});
-        chrome.runtime.onMessage.removeListener(this.callbacks.onMessage);
-        $(document.body).off('mouseover',  this.callbacks.onMouseover);
-        $(document.body).off('mouseout',   this.callbacks.onMouseout);
-        $(document.body).off('click',      this.callbacks.onClick);
-        $(document.body).off('imazip:end', this.callbacks.onEnd);
+        chrome.runtime.onMessage.removeListener(this.onMessage);
+        $(document.body).off('mouseover',  this.onMouseover);
+        $(document.body).off('mouseout',   this.onMouseout);
+        $(document.body).off('click',      this.onClick);
+        $(document.body).off('imazip:end', this.onEnd);
     }
 }
 
