@@ -3,16 +3,30 @@
 declare var chrome:any;
 
 class UrlPicker {
-    HIGHLIGHT_SHADOW:string = '0 0 30px rgba(0,0,128,0.5)';
-    originalShadow:any;
-    highlightTarget:any;
+    MASK_STYLE = {
+        position: 'absolute',
+        backgroundColor: "#c0c0c0",
+        zIndex: 999999,
+        opacity: 0.8,
+    };
+    highlightTarget: Element;
+    $container: JQuery;
+    $topFrame: JQuery;
+    $leftFrame: JQuery;
+    $rightFrame: JQuery;
+    $bottomFrame: JQuery;
 
     constructor() {
+        this.initScreen();
         chrome.runtime.onMessage.addListener(this.onMessage);
-        $(document.body).on('mouseover',  this.onMouseover);
-        $(document.body).on('mouseout',   this.onMouseout);
+        $(document.body).on('mousemove',  this.onMousemove);
         $(document.body).on('click',      this.onClick);
         $(document.body).on('imazip:end', this.onEnd);
+    }
+
+    private initScreen() {
+        this.$container = $('<div>');
+        $(document.body).append(this.$container);
     }
 
     private onMessage = (e) => {
@@ -21,15 +35,51 @@ class UrlPicker {
         }
     }
 
-    private onMouseover = (e) => {
-        var target = this.highlightTarget = e.target;
-        this.originalShadow = $(e.target).css('box-shadow');
-        $(e.target).css({'box-shadow':this.HIGHLIGHT_SHADOW});
-    }
+    private onMousemove = (e) => {
+        var x = e.clientX;
+        var y = e.clientY;
+        this.$container.hide();
 
-    private onMouseout = (e) => {
-        var target = e.target;
-        $(e.target).css({'box-shadow':this.originalShadow});
+        var target = document.elementFromPoint(x, y);
+        this.$container.show();
+
+        if (this.highlightTarget === target) { return; }
+        this.highlightTarget = target;
+        var offset = $(target).offset();
+
+        if (this.$topFrame)    this.$topFrame.remove();
+        if (this.$bottomFrame) this.$bottomFrame.remove();
+        if (this.$leftFrame)   this.$leftFrame.remove();
+        if (this.$rightFrame)  this.$rightFrame.remove();
+
+        this.$bottomFrame = $('<div>').css(this.MASK_STYLE).css({
+            top: offset.top + $(target).height(),
+            left: 0,
+            right: 0,
+            height: document.body.clientHeight - (offset.top + $(target).height()),
+        });
+        this.$leftFrame = $('<div>').css(this.MASK_STYLE).css({
+            top: offset.top,
+            height: $(target).height(),
+            left: 0,
+            width: offset.left,
+        });
+        this.$rightFrame = $('<div>').css(this.MASK_STYLE).css({
+            top: offset.top,
+            height: $(target).height(),
+            right: 0,
+            width: document.body.clientWidth - (offset.left + $(target).width()),
+        });
+        this.$topFrame = $('<div>').css(this.MASK_STYLE).css({
+            top: 0,
+            left: 0,
+            right: 0,
+            height: offset.top,
+        });
+        this.$container.append(this.$topFrame);
+        this.$container.append(this.$leftFrame);
+        this.$container.append(this.$rightFrame);
+        this.$container.append(this.$bottomFrame);
     }
 
     private onClick = (e) => {
@@ -67,10 +117,9 @@ class UrlPicker {
     }
 
     private onEnd = (e) => {
-        $(this.highlightTarget).css({'box-shadow':this.originalShadow});
+        this.$container.remove();
         chrome.runtime.onMessage.removeListener(this.onMessage);
-        $(document.body).off('mouseover',  this.onMouseover);
-        $(document.body).off('mouseout',   this.onMouseout);
+        $(document.body).off('mousemove',  this.onMousemove);
         $(document.body).off('click',      this.onClick);
         $(document.body).off('imazip:end', this.onEnd);
     }
