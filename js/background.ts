@@ -15,7 +15,7 @@ chrome.browserAction.setBadgeBackgroundColor({ color: '#00FF00' });
 
 chrome.browserAction.onClicked.addListener(function() {
 
-    chrome.tabs.query({active:true}, function(tabs) {
+    chrome.tabs.query({active:true, 'windowId': chrome.windows.WINDOW_ID_CURRENT}, function(tabs) {
         var tab = tabs[0];
 
         new Promise(function(resolve, reject) {
