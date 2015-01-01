@@ -68,7 +68,7 @@ class ImazipURL {
     constructor(urlString: string) {
         var url = new URL(urlString);
         // google images
-        if (url.hostname + url.pathname === 'www.google.co.jp/imgres') {
+        if (url.hostname.match(/^www\.google\./) && url.pathname === '/imgres') {
             var params = this.parseParams(url);
             url = new URL(decodeURIComponent(decodeURIComponent(params.imgurl)));
         }
