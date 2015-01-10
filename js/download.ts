@@ -71,7 +71,7 @@ class ImazipURL {
             url = new URL(urlString);
         } catch(e) {
             console.log(e)
-            return {};
+            return;
         }
         // google images
         if (url.hostname.match(/^www\.google\./) && url.pathname === '/imgres') {

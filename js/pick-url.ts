@@ -86,7 +86,7 @@ class UrlPicker {
         // tumblr
         var urls;
         if (location.hostname === 'www.tumblr.com' && location.pathname.match(/^\/search\//)) {
-            urls = $(e.target).find('article').toArray().map((article) => {
+            urls = $(this.highlightTarget).find('article').toArray().map((article) => {
                 var urlSetList = JSON.parse($(article).attr('data-imazip'));
                 return urlSetList.map((urlSet) => {
                     return {
@@ -99,7 +99,7 @@ class UrlPicker {
                 return ary.concat(urlSetList);
             }, []);
         } else {
-            urls = $(e.target).find('img').toArray().filter((img) => img.src).map((img) => {
+            urls = $(this.highlightTarget).find('img').toArray().filter((img) => img.src).map((img) => {
                 var anchorUrl = $(img).closest('a').attr('href');
                 return {
                     anchorUrl : anchorUrl,
